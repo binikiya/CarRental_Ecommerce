@@ -90,7 +90,7 @@ This is multivendor ecommerce website. Customers can purchase web scripts in var
     - Dispute management
     - Review moderation
     - CMS (Home banners, static pages)
-    - Multi-language content control
+    - Multilingual
     - Role & permission management
     - Audit logs
 ============================================
@@ -112,12 +112,175 @@ This is multivendor ecommerce website. Customers can purchase web scripts in var
 
 # Database Design
 --------------------------------------------
-- Users
-- Sellers
-- Cars
-- Orders
-- Rentals
-- Reviews
+- Users App
+    - Users (Users Authentication Table)
+        - id (PK)
+        - role ENUM('customer','seller','admin')
+        - name
+        - email UNIQUE
+        - phone
+        - password
+        - email_verified_at
+        - status ENUM('active','blocked')
+        - created_at
+        - updated_at
+    - Saved Addresses (Customer Specific Tables)
+        - id (PK)
+        - user_id (FK)
+        - address_type ENUM('billing','shipping')
+        - full_name
+        - phone
+        - email
+        - country
+        - state
+        - city
+        - street_address
+        - postal_code
+        - is_default BOOLEAN
+        - created_at
+        - updated_at
+    - Saved Payment Methods (Tooken Only)
+        - id (PK)
+        - user_id (FK)
+        - provider ENUM('stripe','paypal','razorpay')
+        - payment_token
+        - card_brand
+        - last4
+        - expiry_month
+        - expiry_year
+        - is_default BOOLEAN
+        - created_at
+        - updated_at
+    - Reviews
+        - id (PK)
+        - user_id (FK)
+        - product_id (FK)
+        - rating (1–5)
+        - comment
+        - status ENUM('approved','pending','rejected')
+        - created_at
+    - Wishlists
+        - id (PK)
+        - user_id (FK)
+        - product_id (FK)
+        - created_at
+- Sellers App
+    - Sellers
+        - id (PK)
+        - user_id (FK -> users.id)
+        - company_name
+        - business_email
+        - business_phone
+        - verification_status ENUM('pending','approved','rejected')
+        - created_at
+        - updated_at
+    - Categories
+        - id (PK)
+        - name
+        - category_slug
+        - parent_id (nullable)
+        - status
+        - created_at
+        - updated_at
+    - Brands
+        - id (PK)
+        - name
+        - country
+        - founded_year
+        - status
+        - created_at
+        - updated_at
+- Cars App
+    - Cars (Rent only, Sell only, Both)
+        - id (PK)
+        - seller_id (FK)
+        - category_id (FK)
+        - brand_id (FK)
+        - title
+        - slug
+        - description
+        - car_type ENUM('rent','sell','both')
+        - price_sell
+        - price_per_day
+        - model_year
+        - fuel_type
+        - transmission
+        - mileage
+        - status ENUM('active','inactive','sold')
+        - views_count
+        - created_at
+        - updated_at
+    - Rental Availability (Prevents double booking & Enables calander view)
+        - id (PK)
+        - product_id (FK)
+        - available_from
+        - available_to
+        - status ENUM('available','booked','blocked')
+        - created_at
+    - Rentals (Only for Rent orders)
+        - id (PK)
+        - order_id (FK)
+        - pickup_date
+        - dropoff_date
+        - pickup_location
+        - dropoff_location
+        - total_days
+        - created_at
+    - Audit Logs
+        - id (PK)
+        - user_id (FK)
+        - action
+        - ip_address
+        - created_at
+- Orders app
+    - Orders (Master Table - Snapshot address)
+        - id (PK)
+        - order_number
+        - user_id (FK)
+        - seller_id (FK)
+        - order_type ENUM('rent','sell')
+        - status ENUM('pending','paid','cancelled','completed')
+        - total_amount
+        - payment_status
+        - payment_provider
+        - billing_address_json
+        - created_at
+        - updated_at
+    - Order Items
+        - id (PK)
+        - order_id (FK)
+        - product_id (FK)
+        - price
+        - quantity
+        - created_at
+    - Payments
+        - id (PK)
+        - order_id (FK)
+        - payment_provider
+        - transaction_id
+        - amount
+        - currency
+        - status
+        - paid_at
+        - created_at
+    - Commissions
+        - id (PK)
+        - seller_id (FK)
+        - percentage
+        - created_at
+
+# API Development
+--------------------------------------------
+- REST API
+- Secure Authentication
+- Admin, Seller, Customer APIs
+
+# UI/UX
+--------------------------------------------
+- Page wireframes
+- Dashboard layout
+- Mobile-first design
+- Performance optimization
 
 # Technologies (2025)
 --------------------------------------------

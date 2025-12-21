@@ -43,7 +43,7 @@ This is multivendor ecommerce website. Customers can purchase web scripts in var
     - Order Success Page
     - Order Failure Page
     - Multilingual
-==========================================
+--------------------------------------------
 - Customer Panel
     - Login
     - Register
@@ -59,7 +59,7 @@ This is multivendor ecommerce website. Customers can purchase web scripts in var
     - Download Invoices
     - Review Moderation (Edit/Delete own reviews)
     - Cancel/Return request
-===========================================
+--------------------------------------------
 - Seller Panel
     - Login
     - Register
@@ -77,7 +77,7 @@ This is multivendor ecommerce website. Customers can purchase web scripts in var
     - Earnings & payouts
     - Sales & rental analytics
     - Chat with customers (optional but powerful)
-============================================
+--------------------------------------------
 - Admin Panel
     - Manage Sellers
     - Manage Categories
@@ -93,13 +93,13 @@ This is multivendor ecommerce website. Customers can purchase web scripts in var
     - Multilingual
     - Role & permission management
     - Audit logs
-============================================
+--------------------------------------------
 - Multilingual
     - Language switcher
     - RTL support (if needed later)
     - Translation management (Admin side)
     - Currency conversion
-============================================
+--------------------------------------------
 - Security and System Features
     - Email verification
     - Phone OTP (for rentals)

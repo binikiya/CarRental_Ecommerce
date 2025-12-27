@@ -116,21 +116,22 @@ This is multivendor ecommerce website. Customers can purchase web scripts in var
     - Users (Users Authentication Table)
         - id (PK)
         - role ENUM('customer','seller','admin')
-        - name
+        - first_name
+        - last_name
         - email UNIQUE
+        - gender
         - phone
         - password
-        - email_verified_at
+        - email_verified
         - status ENUM('active','blocked')
         - created_at
         - updated_at
     - Saved Addresses (Customer Specific Tables)
         - id (PK)
-        - user_id (FK)
+        - user (FK)
         - address_type ENUM('billing','shipping')
         - full_name
         - phone
-        - email
         - country
         - state
         - city
@@ -139,9 +140,9 @@ This is multivendor ecommerce website. Customers can purchase web scripts in var
         - is_default BOOLEAN
         - created_at
         - updated_at
-    - Saved Payment Methods (Tooken Only)
+    - Payment Methods (Tooken Only)
         - id (PK)
-        - user_id (FK)
+        - user (FK)
         - provider ENUM('stripe','paypal','razorpay')
         - payment_token
         - card_brand
@@ -151,19 +152,6 @@ This is multivendor ecommerce website. Customers can purchase web scripts in var
         - is_default BOOLEAN
         - created_at
         - updated_at
-    - Reviews
-        - id (PK)
-        - user_id (FK)
-        - product_id (FK)
-        - rating (1–5)
-        - comment
-        - status ENUM('approved','pending','rejected')
-        - created_at
-    - Wishlists
-        - id (PK)
-        - user_id (FK)
-        - product_id (FK)
-        - created_at
 - Sellers App
     - Sellers
         - id (PK)
@@ -191,7 +179,7 @@ This is multivendor ecommerce website. Customers can purchase web scripts in var
         - created_at
         - updated_at
 - Cars App
-    - Cars (Rent only, Sell only, Both)
+    - Cars (Products) (Rent only, Sell only, Both)
         - id (PK)
         - seller_id (FK)
         - category_id (FK)
@@ -231,6 +219,19 @@ This is multivendor ecommerce website. Customers can purchase web scripts in var
         - user_id (FK)
         - action
         - ip_address
+        - created_at
+    - Reviews
+        - id (PK)
+        - user_ (FK)
+        - product_id (FK)
+        - rating (1–5)
+        - comment
+        - status ENUM('approved','pending','rejected')
+        - created_at
+    - Wishlists
+        - id (PK)
+        - user_id (FK)
+        - product_id (FK)
         - created_at
 - Orders app
     - Orders (Master Table - Snapshot address)

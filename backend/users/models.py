@@ -4,6 +4,7 @@ from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib.auth.base_user import BaseUserManager
 from datetime import date
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class UserManager(BaseUserManager):
@@ -150,3 +151,45 @@ class PaymentMethod(models.Model):
 
     class Meta:
         unique_together = ('user', 'provider', 'payment_token')
+
+
+class Review(models.Model):
+    STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    )
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
+    car = models.ForeignKey('cars.Car', on_delete=models.CASCADE, related_name='reviews')
+    rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    comment = models.TextField(null=True, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'car')
+        indexes = [
+            models.Index(fields=['car', 'status']),
+        ]
+
+    def __str__(self):
+        return f"Review {self.id} - User: {self.user.email} - Car: {self.car.title}"
+
+
+class Wishlist(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='wishlist')
+    car = models.ForeignKey('cars.Car', on_delete=models.CASCADE, related_name='wishlist')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'car')
+        indexes = [
+            models.Index(fields=['user']),
+        ]
+
+    def __str__(self):
+        return f"Wishlist Item {self.id} - User: {self.user.email} - Car: {self.car.title}"

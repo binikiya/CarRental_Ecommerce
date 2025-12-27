@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import Seller, Commission, AuditLog
 
-# Register your models here.
+admin.site.register(Seller)
+admin.site.register(Commission)
+admin.site.register(AuditLog)

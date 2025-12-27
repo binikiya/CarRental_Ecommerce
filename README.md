@@ -152,38 +152,68 @@ This is multivendor ecommerce website. Customers can purchase web scripts in var
         - is_default BOOLEAN
         - created_at
         - updated_at
+    - Reviews
+        - id (PK)
+        - user (FK -> user.id)
+        - car (FK -> car.id)
+        - rating (1–5)
+        - comment
+        - status ENUM('approved','pending','rejected')
+        - created_at
+    - Wishlists
+        - id (PK)
+        - user_id (FK -> user.id)
+        - car (FK -> car.id)
+        - created_at
 - Sellers App
     - Sellers
         - id (PK)
-        - user_id (FK -> users.id)
+        - user (FK -> users.id)
         - company_name
-        - business_email
+        - business_email (Unique)
         - business_phone
         - verification_status ENUM('pending','approved','rejected')
         - created_at
         - updated_at
+    - Commissions
+        - id (PK)
+        - seller (FK -> sellers.id)
+        - order (FK -> order.id)
+        - percentage
+        - amount
+        - paid
+        - paid_at
+        - created_at
+    - Audit Logs
+        - id (PK)
+        - user (FK -> users.id)
+        - user_agent
+        - action
+        - ip_address
+        - created_at
+- Cars App
     - Categories
         - id (PK)
         - name
         - category_slug
-        - parent_id (nullable)
-        - status
+        - parent (nullable)
+        - status ENUM('active','inactive')
         - created_at
         - updated_at
     - Brands
         - id (PK)
-        - name
+        - name (Unique)
         - country
+        - slug
         - founded_year
         - status
         - created_at
         - updated_at
-- Cars App
     - Cars (Products) (Rent only, Sell only, Both)
         - id (PK)
-        - seller_id (FK)
-        - category_id (FK)
-        - brand_id (FK)
+        - seller (FK -> sellers.id)
+        - category (FK -> categories.id)
+        - brand (FK -> brands.id)
         - title
         - slug
         - description
@@ -191,84 +221,69 @@ This is multivendor ecommerce website. Customers can purchase web scripts in var
         - price_sell
         - price_per_day
         - model_year
-        - fuel_type
-        - transmission
+        - fuel_type ENUM('petrol', 'diesel', 'electric', 'Hybrid')
+        - transmission ENUM('manual', 'automatic')
         - mileage
         - status ENUM('active','inactive','sold')
         - views_count
+        - is_available
         - created_at
         - updated_at
     - Rental Availability (Prevents double booking & Enables calander view)
         - id (PK)
-        - product_id (FK)
+        - car (FK -> cars.id)
         - available_from
         - available_to
         - status ENUM('available','booked','blocked')
         - created_at
     - Rentals (Only for Rent orders)
         - id (PK)
-        - order_id (FK)
+        - order (FK -> orders.id)
+        - car (FK -> cars.id)
         - pickup_date
         - dropoff_date
         - pickup_location
         - dropoff_location
         - total_days
         - created_at
-    - Audit Logs
-        - id (PK)
-        - user_id (FK)
-        - action
-        - ip_address
-        - created_at
-    - Reviews
-        - id (PK)
-        - user_ (FK)
-        - product_id (FK)
-        - rating (1–5)
-        - comment
-        - status ENUM('approved','pending','rejected')
-        - created_at
-    - Wishlists
-        - id (PK)
-        - user_id (FK)
-        - product_id (FK)
-        - created_at
 - Orders app
     - Orders (Master Table - Snapshot address)
         - id (PK)
         - order_number
-        - user_id (FK)
-        - seller_id (FK)
+        - user_ (FK -> users.id)
+        - seller (FK -> sellers.id)
         - order_type ENUM('rent','sell')
-        - status ENUM('pending','paid','cancelled','completed')
+        - payment_status ENUM('pending','paid','cancelled','completed')
         - total_amount
-        - payment_status
         - payment_provider
         - billing_address_json
-        - created_at
-        - updated_at
+        - quatity
+        - payment_reference
+        - paid_at
+        - cancelled_at
+        - completed_at
     - Order Items
         - id (PK)
-        - order_id (FK)
-        - product_id (FK)
-        - price
+        - order (FK -> orders.id)
+        - car (FK -> cars.id)
+        - price_snapshot
         - quantity
+        - rental_start_date
+        - rental_end_date
         - created_at
     - Payments
         - id (PK)
-        - order_id (FK)
-        - payment_provider
+        - order (FK -> orders.id)
+        - payment_provider ENUM('stripe', 'razorpay', 'paypal')
         - transaction_id
         - amount
-        - currency
-        - status
+        - currency ENUM('usd', 'eur', 'gbp')
+        - status ENUM('initiated', 'successful', 'failed', 'refunded')
         - paid_at
-        - created_at
-    - Commissions
-        - id (PK)
-        - seller_id (FK)
-        - percentage
-        - created_at
+        - initialized_at
+        - completed_at
+--------------------------------------------
+![alt text](ERD.png)
 
 # API Development
 --------------------------------------------

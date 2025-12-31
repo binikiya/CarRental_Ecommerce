@@ -218,3 +218,26 @@ class Rental(models.Model):
 
     def __str__(self):
         return f"Rental of {self.car.title} from {self.pickup_date} to {self.dropoff_date}"
+
+
+class CarImage(models.Model):
+    id = models.AutoField(primary_key=True)
+    car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='images')
+    image_url = models.URLField()
+    is_primary = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['car']),
+            models.Index(fields=['is_primary']),
+        ]
+
+    def save(self, *args, **kwargs):
+        if self.is_primary:
+            CarImage.objects.filter(car=self.car, is_primary=True).update(is_primary=False)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Image for {self.car.title}"

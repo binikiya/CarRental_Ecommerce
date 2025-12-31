@@ -13,7 +13,10 @@ Setup Projects and Creating Database Models
 9. Install pgAdmin4
 10. Install psycopg2-binary - pip install psycopg2-binary
 11. Install DjangoRestFramework - pip install djangorestframework
-12. Download and Install Nodejs
-13. Create React app - npx create-react-app app_name
-14. Start reactjs service - npx start
-15. Install bootstrap - npm install bootstrap
+12. Install DRF-Nested-Routers - pip install drf-nested-routers
+13. Install Django-Filters - pip install django-filter
+14. Install DjangoRestFramework-simplejwt - pip install djangorestframework-simplejwt
+15. Download and Install Nodejs
+16. Create React app - npx create-react-app app_name
+17. Start reactjs service - npx start
+18. Install bootstrap - npm install bootstrap

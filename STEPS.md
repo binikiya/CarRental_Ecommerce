@@ -17,6 +17,7 @@ Setup Projects and Creating Database Models
 13. Install Django-Filters - pip install django-filter
 14. Install DjangoRestFramework-simplejwt - pip install djangorestframework-simplejwt
 15. Download and Install Nodejs
-16. Create React app - npx create-react-app app_name
-17. Start reactjs service - npx start
+16. Create React app - npm create vite@latest
+17. Start reactjs service - npm run dev
 18. Install bootstrap - npm install bootstrap
+19. Install tailwind - npm install tailwindcss @tailwindcss/vite

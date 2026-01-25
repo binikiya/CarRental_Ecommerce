@@ -1,150 +1,141 @@
 import { Link } from "react-router-dom";
 import { useRef, useEffect, useState } from "react";
 import Logo from '../assets/logo.png';
-import { FaSearch } from "react-icons/fa";
-import { IoNotifications } from "react-icons/io5";
-import { FaPhone } from "react-icons/fa6";
-import { FcSupport } from "react-icons/fc";
-import { MdPermMedia } from "react-icons/md";
-import { MdLogin } from "react-icons/md";
-import { MdDarkMode } from "react-icons/md";
+import { Search, BellRing } from 'lucide-react';
+import { MdLogin, MdDarkMode, MdOutlineSettings } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
-import { IoMdSettings } from "react-icons/io";
+import { HiMenuAlt3, HiX } from "react-icons/hi";
 
 const Header = () => {
     const [open, setOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
+    const [mobileMenu, setMobileMenu] = useState(false);
     const dropDownRef = useRef<HTMLDivElement>(null);
 
+    // Close dropdown on click outside
     useEffect(() => {
-        function handleClickOutside(e: MouseEvent) {
+        const handleClickOutside = (e: MouseEvent) => {
             if (dropDownRef.current && !dropDownRef.current.contains(e.target as Node)) {
                 setOpen(false);
             }
-        }
+        };
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    // Handle Scroll effect
+    useEffect(() => {
+        const handleScroll = () => setScrolled(window.scrollY > 50);
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+    const navLinks = [
+        { name: "Cars", path: "/cars" },
+        { name: "Brands", path: "/brands" },
+        { name: "Categories", path: "/categories" },
+        { name: "Buy/Rent", path: "/rent" },
+    ];
+
     return (
-        <nav className="w-full min-h-16 bg-gradient-to-r rounded-2xl from-slate-900 to-slate-800 border-b border-slate-700">
-            <div className="mx-auto max-w-7xl px-4">
-                <div className="flex h-24 items-center justify-between">
-                    <div className="flex items-center gap-8">
-                        <div className="flex items-center gap-2">
-                            <Link to="/" className="h-15 w-15 rounded-full border-2 border-cyan-200">
-                                <img src={Logo} alt="Logo" />
-                            </Link>
-                        </div>
-                        <div className="hidden md:flex items-center gap-2">
-                            <Link to="#" className="rounded-md bg-slate-800 px-3 py-1.5 text-sm font-medium text-white">
-                                Cars
-                            </Link>
-                            <Link to="#" className="px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white">
-                                Brands
-                            </Link>
-                            <Link to="#" className="px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white">
-                                Categories
-                            </Link>
-                            <Link to="#" className="px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white">
-                                New Products
-                            </Link>
-                            <Link to="#" className="px-3 py-1.5 text-sm font-medium text-slate-300 hover:text-white">
-                                Buy/Rent
-                            </Link>
-                        </div>
-                    </div>
-
-                    <div className="hidden md:flex flex-1 justify-center">
-                        <div className="relative w-full max-w-md">
-                            <span className="absolute inset-y-0 left-3 flex items-center text-slate-400">
-                                <FaSearch />
-                            </span>
-                            <input type="text" placeholder="Search" className="w-full rounded-lg bg-slate-800 pl-9 pr-3 py-2 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-indigo-500"/>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-4 relative z-50">
-                        <button className="text-amber-300 hover:text-white text-2xl mb-2" type="button">
-                            <IoNotifications />
-                        </button>
-                        <div className="relative" ref={dropDownRef}>
-                            <button onClick={() => setOpen(!open)} className="h-8 w-8 rounded-full border border-slate-600">
-                                <span className="text-3xl text-slate-500">
-                                    <CgProfile />
-                                </span>
-                            </button>
-                            {open && (
-                                <div className="absolute right-0 mt-2 w-48 rounded-xl border border-white/10 bg-slate-900/90 backdrop-blur-xl shadow-lg">
-                                    <ul className="py-1 text-sm text-slate-200">
-                                        <li>
-                                            <a href="#" className="block px-4 py-2 hover:bg-slate-800 rounded-lg">
-                                                <div className="flex">
-                                                    <span className="ml-2 text-indigo-400 text-lg"><IoMdSettings /></span>
-                                                    <p className="ml-4">Setting</p>
-                                                </div>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#" className="block px-4 py-2 hover:bg-slate-800 rounded-lg">
-                                                <div className="flex">
-                                                    <span className="ml-2 text-indigo-400 text-lg"><MdDarkMode /></span>
-                                                    <p className="ml-4">Dark</p>
-                                                </div>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <hr className="my-1 border-slate-700" />
-                                        </li>
-                                        <li>
-                                            <button className="w-full text-left px-4 py-2 text-green-500 hover:bg-slate-800 rounded-lg">
-                                                <div className="flex">
-                                                    <span className="ml-2 text-green-300 text-lg"><MdLogin /></span>
-                                                    <p className="ml-4">Sign In</p>
-                                                </div>
-                                            </button>
-                                        </li>
-                                    </ul>
-                                </div>
-                            )}
-                        </div>
-
-                        
-                    </div>
+        <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${
+            scrolled 
+            ? "bg-[#050b14]/80 backdrop-blur-md py-3 shadow-[0_8px_32px_rgba(0,0,0,0.5)] border-b border-white/5" 
+            : "bg-gray-800 py-4"
+        }`}>
+            {scrolled && (
+                <div className="absolute inset-0 -z-10 overflow-hidden">
+                    <div className="absolute -top-[40%] -left-[10%] w-[40%] h-[200%] bg-cyan-500/10 blur-[80px] rotate-12"></div>
+                    <div className="absolute -top-[40%] -right-[10%] w-[40%] h-[200%] bg-indigo-600/10 blur-[80px] -rotate-12"></div>
                 </div>
-                <div className="flex-1">
-                    <div className="bg-cover bg-center flex items-center justify-center px-6">
-                        <div className="grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-1">
-                            <div className="rounded-2xl border border-white/10 p-4 backdrop-blur-xl shadow-lg">
-                                <h2 className="text-6xl text-white p-2">Work With Us</h2>
-                                <p className="text-sm text-slate-300 leading-relaxed">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ducimus quaerat at aspernatur veniam consectetur explicabo, recusandae quos minus laborum alias delectus nemo saepe inventore laudantium. Repellat excepturi ex ad nobis.</p>
-                            </div>
+            )}
+            <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+                {/* Logo */}
+                <Link to="/" className="flex items-center gap-2 group">
+                    <div className="h-10 w-10 rounded-xl bg-linear-to-br from-cyan-400 to-indigo-600 p-0.5 transition-transform group-hover:rotate-12">
+                        <div className="h-full w-full bg-slate-900 rounded-[10px] flex items-center justify-center">
+                            <img src={Logo} alt="Logo" className="h-7 w-7 object-contain" />
                         </div>
                     </div>
+                    <span className="text-white font-bold text-xl tracking-tight hidden sm:block">
+                        DRIVE<span className="text-cyan-400">X</span>
+                    </span>
+                </Link>
 
-                    <div className="bg-cover bg-center flex items-center justify-center px-6 mt-3 mb-3">
-                        <div className="grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-3">
-                            <div className="rounded-2xl border border-white/10 p-4 backdrop-blur-xl shadow-lg">
-                                <div className="mb-3 flex items-center gap-3 text-white">
-                                    <span className="text-indigo-400 text-lg"><FaPhone /></span>
-                                    <h3 className="font-semibold text-lg">Sales</h3>
-                                </div>
-                                <p className="text-sm text-slate-300 leading-relaxed">Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta cum quos, quam alias ullam non labore necessitatibus id voluptatum hic!</p>
+                {/* Desktop Navigation */}
+                <div className="hidden lg:flex items-center gap-1 bg-slate-800/40 p-1 rounded-full border border-white/5">
+                    {navLinks.map((link) => (
+                        <Link key={link.name} to={link.path} className="px-5 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-white/10 rounded-full transition-all">
+                            {link.name}
+                        </Link>
+                    ))}
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center gap-3">
+                    {/* Search - Hidden on tiny screens */}
+                    <div className="relative hidden md:block">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs" />
+                        <input type="text" placeholder="Search..." className="bg-slate-800/50 border border-white/10 rounded-full pl-9 pr-4 py-1.5 text-sm text-white focus:ring-2 focus:ring-cyan-500 outline-none w-40 focus:w-60 transition-all" />
+                    </div>
+
+                    <button className="p-2 text-slate-400 hover:text-cyan-400 transition-colors relative">
+                        <BellRing size={20} /> <span className="sr-only">Notifications</span>
+                        <span className="absolute top-2 right-2 w-2 h-2 bg-cyan-500 rounded-full border-2 border-slate-900"></span>
+                    </button>
+
+                    {/* Profile Dropdown */}
+                    <div className="relative" ref={dropDownRef}>
+                        <button 
+                            onClick={() => setOpen(!open)}
+                            className="flex items-center gap-2 p-1 pr-3 rounded-full bg-slate-800 hover:bg-slate-700 transition-colors border border-white/10"
+                        >
+                            <div className="h-8 w-8 rounded-full bg-linear-to-tr from-cyan-500 to-blue-500 flex items-center justify-center text-white">
+                                <CgProfile size={20} />
                             </div>
-                            <div className="rounded-2xl border border-white/10 p-4 backdrop-blur-xl shadow-lg">
-                                <div className="mb-3 flex items-center gap-3 text-white">
-                                    <span className="text-indigo-400 text-lg"><FcSupport /></span>
-                                    <h3 className="font-semibold text-lg">Technical Support</h3>
-                                </div>
-                                <p className="text-sm text-slate-300 leading-relaxed">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quasi, suscipit? Quas iure accusantium, culpa nihil odit quisquam obcaecati.</p>
+                            <span className="text-xs font-semibold text-white hidden sm:block">Account</span>
+                        </button>
+
+                        {open && (
+                            <div className="absolute right-0 mt-3 w-56 origin-top-right rounded-2xl border border-white/10 bg-slate-900/95 backdrop-blur-xl shadow-2xl p-2 animate-in fade-in zoom-in duration-200">
+                                <Link to="/settings" className="flex items-center gap-3 px-4 py-3 text-sm text-slate-300 hover:bg-white/5 rounded-xl transition-colors">
+                                    <MdOutlineSettings className="text-cyan-400 text-lg" /> Settings
+                                </Link>
+                                <button className="w-full flex items-center gap-3 px-4 py-3 text-sm text-slate-300 hover:bg-white/5 rounded-xl transition-colors">
+                                    <MdDarkMode className="text-purple-400 text-lg" /> Dark Mode
+                                </button>
+                                <div className="h-px bg-white/10 my-2 mx-2"></div>
+                                <button className="w-full flex items-center gap-3 px-4 py-3 text-sm text-emerald-400 hover:bg-emerald-500/10 rounded-xl transition-colors font-medium">
+                                    <MdLogin className="text-lg" /> Sign In
+                                </button>
                             </div>
-                            <div className="rounded-2xl border border-white/10 p-4 backdrop-blur-xl shadow-lg">
-                                <div className="mb-3 flex items-center gap-3 text-white">
-                                    <span className="text-indigo-400 text-lg"><MdPermMedia /></span>
-                                    <h3 className="font-semibold text-lg">Media Inquiries</h3>
-                                </div>
-                                <p className="text-sm text-slate-300 leading-relaxed">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est laboriosam vero ratione id nemo deleniti placeat earum dicta odio veniam.</p>
-                            </div>
-                        </div>
+                        )}
+                    </div>
+
+                    {/* Mobile Menu Toggle */}
+                    <button className="lg:hidden p-2 text-white" onClick={() => setMobileMenu(!mobileMenu)}>
+                        {mobileMenu ? <HiX size={28} /> : <HiMenuAlt3 size={28} />}
+                    </button>
+                </div>
+            </div>
+
+            {scrolled && (
+                <div className="absolute inset-0 -z-10 overflow-hidden">
+                    <div className="absolute -top-[40%] -left-[10%] w-[40%] h-[200%] bg-cyan-500/10 blur-[80px] rotate-12"></div>
+                    <div className="absolute -top-[40%] -right-[10%] w-[40%] h-[200%] bg-indigo-600/10 blur-[80px] -rotate-12"></div>
+                </div>
+            )}
+
+            {/* Mobile Slide-over Menu */}
+            <div className={`lg:hidden fixed inset-0 bg-slate-950 z-60 transition-transform duration-300 ${mobileMenu ? "translate-x-0" : "translate-x-full"}`}>
+                <div className="p-6">
+                    <button onClick={() => setMobileMenu(false)} className="mb-8 text-white"><HiX size={32}/><span className="sr-only">Close Menu</span></button>
+                    <div className="flex flex-col gap-6">
+                        {navLinks.map((link) => (
+                            <Link key={link.name} to={link.path} onClick={() => setMobileMenu(false)} className="text-3xl font-bold text-white hover:text-cyan-400">
+                                {link.name}
+                            </Link>
+                        ))}
                     </div>
                 </div>
             </div>

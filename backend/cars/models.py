@@ -92,11 +92,13 @@ class Car(models.Model):
 
     id = models.AutoField(primary_key=True)
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE, related_name='cars')
+    tag = models.CharField(max_length=50, blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='cars')
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, related_name='cars')
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
     description = models.TextField()
+    speed = models.CharField(max_length=20)
     car_type = models.CharField(max_length=20, choices=CAR_CHOICES)
     price_sell = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     price_per_day = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
@@ -223,7 +225,7 @@ class Rental(models.Model):
 class CarImage(models.Model):
     id = models.AutoField(primary_key=True)
     car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='images')
-    image_url = models.URLField()
+    image_url = models.ImageField(upload_to='cars/')
     is_primary = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)

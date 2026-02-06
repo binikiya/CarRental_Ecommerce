@@ -14,12 +14,6 @@ class BrandSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'slug', 'country', 'founded_year', 'status', 'created_at', 'updated_at']
 
 
-class CarSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Car
-        fields = ['id', 'seller', 'category', 'brand', 'title', 'slug', 'description', 'car_type', 'price_sell', 'price_per_day', 'model_year', 'fuel_type', 'transmission', 'mileage', 'status', 'views_count', 'is_available', 'created_at', 'updated_at']
-
-
 class RentalAvailabilitySerializer(serializers.ModelSerializer):
     class Meta:
         model = RentalAvailability
@@ -35,4 +29,13 @@ class RentalSerializer(serializers.ModelSerializer):
 class CarImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = CarImage
-        fields = ['id', 'car', 'image_url', 'is_primary', 'created_at']
+        fields = ['id', 'car', 'image_url', 'is_primary']
+
+
+class CarSerializer(serializers.ModelSerializer):
+    category_details = CategorySerializer(source='category', read_only=True)
+    images = CarImageSerializer(many=True, read_only=True)
+    class Meta:
+        model = Car
+        fields = '__all__'
+        read_only_fields = ['seller']

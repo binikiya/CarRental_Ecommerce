@@ -12,5 +12,12 @@
     "lucide-react": "^0.563.0",
     "react-router-dom": "^7.13.0",
     "tailwindcss": "^4.1.18"
+  },
+  "devDependencies": {
+    "@types/react-datepicker": "^7.0.0",
+    "date-fns": "^4.1.0",
+    "install": "^0.13.0",
+    "npm": "^11.8.0",
+    "react-datepicker": "^9.1.0"
   }
 }

@@ -1,24 +1,31 @@
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.exceptions import PermissionDenied
 from .models import Category, Brand, Car, RentalAvailability, Rental, CarImage
 from .serializers import CategorySerializer, BrandSerializer, CarSerializer, RentalSerializer, RentalAvailabilitySerializer, CarImageSerializer
 
 
 class CategoryViwSet(viewsets.ModelViewSet):
-    permission_classes = [IsAdminUser,]
     serializer_class = CategorySerializer
     http_method_names = ['patch', 'get', 'post']
 
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
     def get_queryset(self):
-        return Category.objects.filter(category=self.request.user)
+        if self.action in ['list', 'retrieve']:
+            return Category.objects.all()
+
+        user = self.request.user
+
+        if user.is_superuser:
+            return Category.objects.all()
+
+        return Category.objects.all()
 
     def perform_create(self, serializer):
-        category = serializer.validated_data['Category']
-        if category.user != self.request.user:
-            raise PermissionDenied("You do not have permission to create this Category.")
-        if category.status == 'active':
-            raise PermissionDenied("Currently this category are active")
         serializer.save()
 
 
@@ -31,21 +38,30 @@ class BrandViewSet(viewsets.ModelViewSet):
         return Brand.objects.filter(band=self.request.user)
     
     def perform_create(self, serializer):
-        brand = serializer.validated_data['Brand']
-        if brand.user != self.request.user:
-            raise PermissionDenied("You do not have permission to create this Brand.")
-        if brand.status == 'active':
-            raise PermissionDenied("Currently this brand are active")
+        if not self.request.user.is_staff:
+            raise PermissionDenied("Only admin can create brands")
         serializer.save()
 
 
 class CarViewSet(viewsets.ModelViewSet):
-    http_method_names = ['get', 'patch', 'post']
+    http_method_names = ['get', 'patch', 'post', 'delete']
     serializer_class = CarSerializer
-    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
     def get_queryset(self):
-        return Car.objects.filter(car=self.request.user)
+        if self.action in ['list', 'retrieve']:
+            return Car.objects.filter(status='active', is_available=True)
+
+        user = self.request.user
+
+        if user.is_superuser:
+            return Car.objects.all()
+
+        return Car.objects.filter(seller__user=user)
 
     def perform_create(self, serializer):
         serializer.save(seller=self.request.user.seller)
@@ -78,15 +94,25 @@ class RentalViewSet(viewsets.ModelViewSet):
 
 
 class CarImageViewSet(viewsets.ModelViewSet):
-    http_method_names = ['get', 'patch', 'post']
     serializer_class = CarImageSerializer
-    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
     def get_queryset(self):
-        return CarImage.objects.filter(car=self.request.user)
+        if self.action in ['list', 'retrieve']:
+            return CarImage.objects.select_related('car').all()
+
+        user = self.request.user
+        if not hasattr(user, 'seller'):
+            return CarImage.objects.none()
+
+        return CarImage.objects.filter(car__seller=user.seller)
 
     def perform_create(self, serializer):
-        carImage = serializer.validated_data['Car']
-        if carImage.user != self.request.user:
-            raise PermissionDenied("You do not have permission to create this Car")
+        car = serializer.validated_data['car']
+        if car.seller.user != self.request.user:
+            raise PermissionDenied("You do not own this car")
         serializer.save()

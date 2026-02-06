@@ -8,7 +8,7 @@ router.register(r'car', CarViewSet, basename='Car')
 router.register(r'rental', RentalViewSet, basename='Rental')
 router.register(r'availability', RentalAvailabilityViewSet, basename='Rental-Avalability')
 router.register(r'brand', BrandViewSet, basename='Brand')
-router.register(r'', CategoryViwSet, basename='category')
+router.register(r'category', CategoryViwSet, basename='category')
 
 urlpatterns = [
     *router.urls

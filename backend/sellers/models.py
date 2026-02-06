@@ -11,7 +11,7 @@ class Seller(models.Model):
     )
 
     id = models.AutoField(primary_key=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='seller_profile')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='seller')
     company_name = models.CharField(max_length=255)
     business_email = models.EmailField(unique=True)
     business_phone = models.CharField(max_length=20)

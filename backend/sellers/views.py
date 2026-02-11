@@ -3,10 +3,11 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.views import APIView
-from .models import Seller, Commission, AuditLog
+from .models import Seller, Commission, AuditLog, Dispute
 from rest_framework.decorators import action
 from cars.models import Car
-from .serializers import SellerSerializer, CommissionSerializer, AuditLogSerializer
+from .serializers import SellerSerializer, CommissionSerializer, AuditLogSerializer, DisputeSerializer
+from .helpers import log_action, export_to_csv
 
 
 class AdminAnalyticsView(APIView):
@@ -36,35 +37,68 @@ class SellerViewSet(viewsets.ModelViewSet):
     queryset = Seller.objects.all()
 
     def get_queryset(self):
-        return Seller.objects.filter(user=self.request.user)
+        queryset = Seller.objects.all()
+        return queryset.filter(user=self.request.user) if not self.request.user.is_staff else queryset
 
     def perform_create(self, serializer):
         if Seller.objects.filter(user=self.request.user).exists():
             raise PermissionDenied("Seller Profile Already Exists")
 
         serializer.save(user=self.request.user)
+        log_action(self.request, 'create')
 
     @action(detail=True, methods=['patch'])
-    def toggle_verify(self, request, pk=None):
+    def update_verification(self, request, pk=None):
         seller = self.get_object()
-        seller.is_verified = not seller.is_verified
-        seller.save()
-        return Response({'status': 'Verification updated', 'is_verified': seller.is_verified})
-
-    @action(detail=True, methods=['patch'])
-    def toggle_status(self, request, pk=None):
-        seller = self.get_object()
-        seller.status = 'active' if seller.status == 'banned' else 'banned'
-        seller.save()
-        return Response({'status': f'Seller is now {seller.status}'})
+        new_status = request.data.get('status')
+        
+        if new_status in ['pending', 'approved', 'rejected']:
+            seller.verification_status = new_status
+            seller.save()
+            log_action(self.request, 'update_verification')
+            return Response({'status': f'Seller status updated to {new_status}'})
+        
+        return Response({'error': 'Invalid status'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CommissionViewSet(viewsets.ModelViewSet):
+    queryset = Commission.objects.all().order_by('-created_at')
     serializer_class = CommissionSerializer
     permission_classes = [IsAuthenticated,]
 
     def get_queryset(self):
-        return Commission.objects.filter(seller=self.request.user)
+        user = self.request.user
+
+        if user.is_staff or user.is_superuser:
+            return Commission.objects.all().order_by('-created_at')
+
+        try:
+            seller_profile = user.seller
+            return Commission.objects.filter(seller=seller_profile).order_by('-created_at')
+        except Seller.DoesNotExist:
+            return Commission.objects.none()
+    
+    @action(detail=True, methods=['patch'])
+    def mark_as_paid(self, request, pk=None):
+        commission = self.get_object()
+        if commission.paid:
+            return Response({'error': 'Commission already paid'}, status=status.HTTP_400_BAD_REQUEST)
+
+        commission.paid = True
+        commission.paid_at = timezone.now()
+        commission.save()
+
+        log_action(request, 'payment')
+        return Response({'status': 'Commission marked as paid'})
+
+    @action(detail=False, methods=['get'])
+    def export_csv(self, request):
+        if not request.user.is_staff:
+            return Response({"detail": "Unauthorized"}, status=403)
+            
+        commissions = self.get_queryset()
+        fields = ['id', 'seller.company_name', 'order.id', 'amount', 'percentage', 'paid', 'created_at']
+        return export_to_csv(commissions, fields, "platform_commissions")
 
 
 class AuditLogViewSet(viewsets.ModelViewSet):
@@ -72,4 +106,22 @@ class AuditLogViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated,]
 
     def get_queryset(self):
-        return AuditLog.objects.filter(user=self.request.user)
+        return AuditLog.objects.filter(user=self.request.user).order_by('-created_at')
+
+
+class DisputeViewSet(viewsets.ModelViewSet):
+    serializer_class = DisputeSerializer
+
+    queryset = Dispute.objects.all().order_by('-created_at')
+
+    def get_queryset(self):
+        return Dispute.objects.all().order_by('-created_at')
+
+    @action(detail=True, methods=['patch'])
+    def resolve(self, request, pk=None):
+        dispute = self.get_object()
+        dispute.status = 'resolved'
+        dispute.admin_note = request.data.get('note', '')
+        dispute.save()
+        log_action(request, 'update')
+        return Response({'status': 'Dispute resolved'})

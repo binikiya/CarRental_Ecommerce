@@ -62,6 +62,19 @@ export const getAdminAnalytics = async () => {
     return response.data;
 };
 
-export const getSellers = () => api.get('/sellers/');
-export const toggleSellerVerify = (id: number) => api.patch(`/seller/${id}/toggle_verify/`);
-export const toggleSellerStatus = (id: number) => api.patch(`/seller/${id}/toggle_status/`);
+export const getSellers = () => api.get('/seller/');
+export const updateSellerStatus = (id: number, status: 'pending' | 'approved' | 'rejected') => 
+    api.patch(`/seller/${id}/update_verification/`, { status });
+
+export const getAuditLogs = () => api.get('/seller/audit/');
+
+export const getCommissions = () => api.get('/seller/commission/');
+export const markCommissionPaid = (id: number) => api.patch(`/seller/commission/${id}/mark_as_paid/`);
+
+export const getDisputes = () => api.get('/seller/disputes/');
+export const resolveDispute = (id: number) => api.patch(`/seller/disputes/${id}/resolve/`);
+
+export const getAllUsers = () => api.get('/users/');
+export const updateUserRole = (id: number, role: string) => api.patch(`/users/${id}/update_role/`, { role });
+
+export const exportCommissionCSV = () => api.get('/seller/commission/export_csv/', { responseType: 'blob' });

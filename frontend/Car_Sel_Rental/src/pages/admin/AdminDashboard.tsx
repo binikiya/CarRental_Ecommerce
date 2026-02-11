@@ -71,14 +71,9 @@ const AdminDashboard = () => {
                     </div>
                     
                     <div className="h-64 flex items-end justify-between gap-3 px-4">
-                        {/* 2. Added safe check for map */}
                         {data?.revenue_history?.length > 0 ? (
                             data.revenue_history.map((val: number, i: number) => (
-                                <div 
-                                    key={i} 
-                                    style={{ height: `${(val / maxVal) * 100}%` }}
-                                    className="w-full bg-cyan-500/20 hover:bg-cyan-500 transition-all duration-500 rounded-t-xl relative group"
-                                >
+                                <div key={i} style={{ height: `${(val / maxVal) * 100}%` }} className="w-full bg-cyan-500/20 hover:bg-cyan-500 transition-all duration-500 rounded-t-xl relative group">
                                     <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                                         {symbol}{(val * rate).toLocaleString()}
                                     </span>
@@ -109,7 +104,6 @@ const AdminDashboard = () => {
     );
 };
 
-/* --- Sub-components remain the same --- */
 const StatCard = ({ title, value, change, icon, color = "text-cyan-500" }: any) => (
     <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-white/5 shadow-sm hover:shadow-xl transition-shadow duration-300">
         <div className="flex justify-between items-start mb-4">

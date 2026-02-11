@@ -1,11 +1,12 @@
 from rest_framework import routers
 from django.urls import path
-from .views import SellerViewSet, CommissionViewSet, AuditLogViewSet, AdminAnalyticsView
+from .views import SellerViewSet, CommissionViewSet, AuditLogViewSet, AdminAnalyticsView, DisputeViewSet
 
 router = routers.SimpleRouter()
 
 router.register(r'commission', CommissionViewSet, basename='seller-commission')
 router.register(r'audit', AuditLogViewSet, basename='seller-auditlog')
+router.register(r'disputes', DisputeViewSet, basename='seller-disputes')
 router.register(r'', SellerViewSet, basename='Seller')
 
 urlpatterns = [

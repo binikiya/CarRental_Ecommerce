@@ -1,25 +1,51 @@
 import { useState, useEffect } from "react";
 import { FaTrash, FaExternalLinkAlt, FaStar, FaShieldAlt, FaFilter } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { getFilteredCars } from "../../api/carService";
+import { getCars, deleteCar } from "../../api/carService";
 import type { Car } from "../../data/cars";
+import ConfirmModal from "../../components/ConfirmModal";
+import Toast from "../../components/Toast";
 
 const ManageProducts = () => {
     const [cars, setCars] = useState<Car[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [carToDelete, setCarToDelete] = useState<number | null>(null);
+    const [toast, setToast] = useState({ show: false, message: "" });
 
     useEffect(() => {
-        // Fetching all cars for moderation
-        getFilteredCars({}).then(data => {
-            setCars(data);
-            setLoading(false);
-        });
+        const fetchCars = async () => {
+            try {
+                const data = await getCars();
+                setCars(data);
+            }
+            catch (error) {
+                console.error("Failed to load cars", error);
+            }
+            finally {
+                setLoading(false);
+            }
+        };
+        fetchCars();
     }, []);
 
     const handleDelete = (id: number) => {
-        if(window.confirm("Are you sure you want to remove this listing?")) {
-            // api.delete(`/cars/car/${id}/`);
-            setCars(cars.filter(c => c.id !== id));
+        setCarToDelete(id);
+        setIsModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (carToDelete) {
+            try {
+                await deleteCar(carToDelete);
+                setCars(cars.filter(car => car.id !== carToDelete));
+                setIsModalOpen(false);
+
+                setToast({ show: true, message: "Vehicle listing removed successfully!" });
+            }
+            catch (error) {
+                alert("Error deleting car");
+            }
         }
     };
 
@@ -57,10 +83,7 @@ const ManageProducts = () => {
                                     <td className="p-6">
                                         <div className="flex items-center gap-4">
                                             <div className="w-16 h-12 rounded-xl overflow-hidden bg-slate-100 dark:bg-white/5">
-                                                <img 
-                                                    src={car.images?.[0]?.image_file ? `http://localhost:8000${car.images[0].image_file}` : "/placeholder.png"} 
-                                                    className="w-full h-full object-cover" 
-                                                />
+                                                <img alt="" src={car.displayImage} className="w-full h-full object-cover" />
                                             </div>
                                             <div>
                                                 <p className="font-bold dark:text-white text-sm">{car.title}</p>
@@ -73,12 +96,12 @@ const ManageProducts = () => {
                                             <div className="w-6 h-6 rounded-full bg-cyan-500/10 flex items-center justify-center text-cyan-500 text-[10px]">
                                                 <FaShieldAlt size={10} />
                                             </div>
-                                            <span className="text-sm dark:text-slate-300 font-medium">{car.seller_name || "Unknown Seller"}</span>
+                                            <span className="text-sm dark:text-slate-300 font-medium">{car.first_name || "Unknown Seller"}</span>
                                         </div>
                                     </td>
                                     <td className="p-6">
                                         <p className="font-black dark:text-white text-sm">
-                                            ${car.car_type === 'rent' ? `${car.price_per_day}/d` : car.price_sell?.toLocaleString()}
+                                            ${car.car_type === 'rent' ? `${car.price_per_day}/d` : `${Number(car.price_sell).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`}
                                         </p>
                                     </td>
                                     <td className="p-6">
@@ -96,12 +119,12 @@ const ManageProducts = () => {
                                             <button className="p-2.5 bg-slate-100 dark:bg-white/5 rounded-xl text-slate-400 hover:text-amber-500 transition-all">
                                                 <FaStar size={12} />
                                             </button>
-                                            <button 
-                                                onClick={() => handleDelete(car.id)}
-                                                className="p-2.5 bg-red-500/10 rounded-xl text-red-500 hover:bg-red-500 hover:text-white transition-all"
-                                            >
+                                            <button onClick={() => handleDelete(car.id)} className="p-2.5 bg-red-500/10 rounded-xl text-red-500 hover:bg-red-500 hover:text-white transition-all">
                                                 <FaTrash size={12} />
                                             </button>
+
+                                            <ConfirmModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onConfirm={handleConfirmDelete} title="Delete Listing?" message="Are you sure you want to remove this vehicle? This action will permanently delete all photos and data associated with it." />
+                                            <Toast isOpen={toast.show} message={toast.message} onClose={() => setToast({ ...toast, show: false })} />
                                         </div>
                                     </td>
                                 </tr>

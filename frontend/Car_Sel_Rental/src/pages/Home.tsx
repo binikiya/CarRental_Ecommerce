@@ -43,7 +43,6 @@ const Home = () => {
                     Partnered with Industry Leaders
                     </p>
                     <div className="flex flex-wrap justify-center items-center gap-12 opacity-50 grayscale hover:grayscale-0 transition-all">
-                        {/* Replace these with brand icons/logos */}
                         <span className="text-2xl font-bold dark:text-white">VOLKSWAGEN</span>
                         <span className="text-2xl font-bold dark:text-white">PORSCHE</span>
                         <span className="text-2xl font-bold dark:text-white">TESLA</span>

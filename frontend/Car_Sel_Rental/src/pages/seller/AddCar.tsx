@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/api";
-import { createCar } from "../api/carService";
+import api from "../../api/api";
+import { createCar } from "../../api/carService";
 
 const AddCar = () => {
     const navigate = useNavigate();

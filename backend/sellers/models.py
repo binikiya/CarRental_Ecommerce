@@ -66,3 +66,21 @@ class AuditLog(models.Model):
 
     def __str__(self):
         return f"AuditLog {self.id} - {self.user.email} - {self.action}"
+
+
+class Dispute(models.Model):
+    STATUS_CHOICES = (
+        ('open', 'Open'),
+        ('resolved', 'Resolved'),
+        ('escalated', 'Escalated'),
+    )
+    
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='disputes')
+    raised_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    reason = models.TextField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='open')
+    admin_note = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Dispute #{self.id} - {self.status}"

@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.exceptions import PermissionDenied
 from .models import Category, Brand, Car, RentalAvailability, Rental, CarImage
 from .serializers import CategorySerializer, BrandSerializer, CarSerializer, RentalSerializer, RentalAvailabilitySerializer, CarImageSerializer
+from sellers.helpers import log_action
 
 
 class CategoryViwSet(viewsets.ModelViewSet):
@@ -25,8 +26,13 @@ class CategoryViwSet(viewsets.ModelViewSet):
 
         return Category.objects.all()
 
+    def perform_destroy(self, instance):
+        log_action(self.request, 'delete')
+        instance.delete()
+
     def perform_create(self, serializer):
         serializer.save()
+        log_action(self.request, 'create')
 
 
 class BrandViewSet(viewsets.ModelViewSet):

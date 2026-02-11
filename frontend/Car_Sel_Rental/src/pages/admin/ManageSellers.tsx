@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { FaCheckCircle, FaTimesCircle, FaStore, FaEnvelope, FaBan, FaUserCheck } from "react-icons/fa";
-import { getSellers, toggleSellerVerify, toggleSellerStatus } from "../../api/carService";
+import { FaCheck, FaTimes, FaHourglassHalf, FaStore, FaEnvelope, FaPhone } from "react-icons/fa";
+import { getSellers, updateSellerStatus } from "../../api/carService";
 import toast from "react-hot-toast";
 
 const ManageSellers = () => {
@@ -15,92 +15,97 @@ const ManageSellers = () => {
         try {
             const res = await getSellers();
             setSellers(res.data);
-        } catch (err) {
+        }
+        catch (err) {
             toast.error("Failed to load sellers");
-        } finally {
+        }
+        finally {
             setLoading(false);
         }
     };
 
-    const handleVerify = async (id: number) => {
+    const handleStatusChange = async (id: number, status: 'approved' | 'rejected') => {
         try {
-            await toggleSellerVerify(id);
-            toast.success("Verification status updated");
-            fetchSellers(); // Refresh list
-        } catch (err) {
-            toast.error("Action failed");
-        }
-    };
-
-    const handleBan = async (id: number) => {
-        if (!window.confirm("Are you sure you want to change this seller's status?")) return;
-        try {
-            await toggleSellerStatus(id);
-            toast.success("Seller status updated");
+            await updateSellerStatus(id, status);
+            toast.success(`Seller ${status} successfully`);
             fetchSellers();
-        } catch (err) {
-            toast.error("Action failed");
+        }
+        catch (err) {
+            toast.error("Failed to update status");
         }
     };
 
-    if (loading) return <div className="p-10 text-cyan-500 animate-pulse">Loading Global Sellers...</div>;
+    if (loading) return <div className="p-20 text-center text-cyan-500 font-bold animate-pulse">Fetching Merchant Data...</div>;
 
     return (
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <header className="mb-8">
-                <h2 className="text-3xl font-black dark:text-white">Seller <span className="text-cyan-500">Management</span></h2>
-                <p className="text-slate-500 text-sm italic">Review dealer credentials and account standing.</p>
+        <div className="space-y-8 animate-in fade-in duration-500 mt-15">
+            <header>
+                <h1 className="text-4xl font-black dark:text-white">Seller <span className="text-cyan-500">Verification</span></h1>
+                <p className="text-slate-500 text-sm mt-2">Manage business applications and marketplace trust levels.</p>
             </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 {sellers.map((seller) => (
-                    <div key={seller.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-4xl p-6 flex flex-col md:flex-row justify-between gap-6 hover:shadow-xl transition-all">
-                        <div className="flex gap-4">
-                            <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-500 text-2xl">
-                                <FaStore />
-                            </div>
-                            <div>
-                                <h3 className="font-bold text-lg dark:text-white flex items-center gap-2">
-                                    {seller.shop_name || seller.user.username}
-                                    {seller.is_verified && <FaCheckCircle className="text-emerald-500 text-sm" />}
-                                </h3>
-                                <p className="text-xs text-slate-500 flex items-center gap-1">
-                                    <FaEnvelope size={10} /> {seller.user.email}
-                                </p>
-                                <div className="mt-3 flex gap-2">
-                                    <span className={`text-[9px] font-black uppercase px-2 py-1 rounded-md ${seller.status === 'active' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'}`}>
-                                        {seller.status}
-                                    </span>
-                                    <span className="text-[9px] font-black uppercase px-2 py-1 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500">
-                                        ID: #{seller.id}
-                                    </span>
+                    <div key={seller.id} className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 border border-slate-200 dark:border-white/5 shadow-sm hover:shadow-md transition-all">
+                        <div className="flex flex-col sm:flex-row justify-between items-start gap-6">
+                            <div className="flex gap-5">
+                                <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-400">
+                                    <FaStore size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-black dark:text-white leading-tight">{seller.company_name}</h3>
+                                    <div className="mt-2 space-y-1">
+                                        <p className="text-xs text-slate-500 flex items-center gap-2"><FaEnvelope className="text-cyan-500" /> {seller.business_email}</p>
+                                        <p className="text-xs text-slate-500 flex items-center gap-2"><FaPhone className="text-cyan-500" /> {seller.business_phone}</p>
+                                    </div>
                                 </div>
                             </div>
+
+                            <StatusBadge status={seller.verification_status} />
                         </div>
 
-                        <div className="flex items-center gap-2 border-t md:border-t-0 pt-4 md:pt-0 border-slate-100 dark:border-white/5">
-                            <button 
-                                onClick={() => handleVerify(seller.id)}
-                                className={`flex-1 md:flex-none px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
-                                    seller.is_verified 
-                                    ? 'bg-amber-500/10 text-amber-600 hover:bg-amber-500 hover:text-white' 
-                                    : 'bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500 hover:text-white'
-                                }`}
-                            >
-                                <FaUserCheck /> {seller.is_verified ? 'Unverify' : 'Verify'}
-                            </button>
-                            
-                            <button 
-                                onClick={() => handleBan(seller.id)}
-                                className="px-4 py-2 bg-red-500/10 text-red-500 rounded-xl text-xs font-bold hover:bg-red-500 hover:text-white transition-all flex items-center gap-2"
-                            >
-                                <FaBan /> {seller.status === 'active' ? 'Ban' : 'Activate'}
-                            </button>
+                        <div className="mt-8 pt-6 border-t border-slate-100 dark:border-white/5 flex flex-wrap gap-3">
+                            {seller.verification_status !== 'approved' && (
+                                <button 
+                                    onClick={() => handleStatusChange(seller.id, 'approved')}
+                                    className="flex-1 py-3 bg-emerald-500 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-emerald-600 transition-all flex items-center justify-center gap-2"
+                                >
+                                    <FaCheck /> Approve
+                                </button>
+                            )}
+                            {seller.verification_status !== 'rejected' && (
+                                <button 
+                                    onClick={() => handleStatusChange(seller.id, 'rejected')}
+                                    className="flex-1 py-3 bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all flex items-center justify-center gap-2"
+                                >
+                                    <FaTimes /> Reject
+                                </button>
+                            )}
                         </div>
                     </div>
                 ))}
             </div>
         </div>
+    );
+};
+
+const StatusBadge = ({ status }: { status: string }) => {
+    const styles: any = {
+        pending: "bg-amber-500/10 text-amber-500 border-amber-500/20",
+        approved: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+        rejected: "bg-red-500/10 text-red-500 border-red-500/20",
+    };
+
+    const icons: any = {
+        pending: <FaHourglassHalf className="animate-spin-slow" />,
+        approved: <FaCheck />,
+        rejected: <FaTimes />,
+    };
+
+    return (
+        <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tighter border flex items-center gap-2 ${styles[status]}`}>
+            {icons[status]} {status}
+        </span>
     );
 };
 

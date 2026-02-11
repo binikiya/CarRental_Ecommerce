@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { updateCar, getCarById } from "../api/carService";
-import Toast from "../components/Toast";
+import { updateCar, getCarById } from "../../api/carService";
+import Toast from "../../components/Toast";
 
 const EditCar = () => {
     const { id } = useParams();

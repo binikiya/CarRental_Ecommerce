@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { getCars, deleteCar } from "../api/carService";
-import type { Car } from "../data/cars";
-import { FaTrash, FaEdit, FaPlus, FaCar, FaEye, FaSearch, FaCheckCircle } from "react-icons/fa";
+import { getCars, deleteCar } from "../../api/carService";
+import type { Car } from "../../data/cars";
+import { FaTrash, FaEdit, FaPlus, FaCar, FaSearch, FaCheckCircle } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import ConfirmModal from "../components/ConfirmModal";
-import Toast from "../components/Toast";
+import ConfirmModal from "../../components/ConfirmModal";
+import Toast from "../../components/Toast";
 
 const SellerDashboard = () => {
     const [myCars, setMyCars] = useState<Car[]>([]);
@@ -114,7 +114,7 @@ const SellerDashboard = () => {
                     <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-white/5 shadow-sm">
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-500">
-                                <FaPlus size={20} className="rotate-180" /> {/* Reusing icon for 'outbound/sold' */}
+                                <FaPlus size={20} className="rotate-180" />
                             </div>
                             <div>
                                 <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Sold</p>

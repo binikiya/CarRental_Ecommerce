@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import api from "../api/api";
 import { updateCar, getCarById } from "../api/carService";
+import Toast from "../components/Toast";
 
 const EditCar = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [formData, setFormData] = useState<any>(null);
-    const [categories, setCategories] = useState<any[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [toast, setToast] = useState({ show: false, message: "" });
 
     useEffect(() => {
         const fetchCar = async () => {
@@ -22,8 +21,8 @@ const EditCar = () => {
         e.preventDefault();
         try {
             await updateCar(Number(id), formData);
-            alert("Updated successfully!");
-            navigate("/seller/dashboard");
+            setToast({ show: true, message: "Listing updated!" });
+            setTimeout(() => navigate("/seller/dashboard"), 1000);
         } catch (error) {
             console.error(error);
         }
@@ -47,12 +46,14 @@ const EditCar = () => {
 
                 <div className="md:col-span-2">
                     <label className="label-style">Tag</label>
-                    <input value={formData.tag} name="speed" type="text" onChange={(e) => setFormData({...formData, tag: e.target.value})} className="input-style"/>
+                    <input value={formData.tag} name="tag" type="text" onChange={(e) => setFormData({...formData, tag: e.target.value})} className="input-style"/>
                 </div>
 
                 <button type="submit" className="md:col-span-2 py-4 bg-cyan-500 text-slate-900 font-bold rounded-2xl hover:bg-cyan-400">
                     Save Changes
                 </button>
+
+                <Toast isOpen={toast.show} message={toast.message} onClose={() => setToast({ ...toast, show: false })} />
             </form>
         </div>
     );

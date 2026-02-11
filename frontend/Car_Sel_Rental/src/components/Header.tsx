@@ -1,7 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useRef, useEffect, useState } from "react";
 import Logo from '../assets/logo.png';
-import { Search, BellRing } from 'lucide-react';
 import { MdLogin, MdDarkMode, MdOutlineSettings, MdLogout, MdDashboard } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
 import { HiMenuAlt3, HiX } from "react-icons/hi";
@@ -65,7 +64,7 @@ const Header = () => {
         }`}>
             <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
                 <Link to="/" className="flex items-center gap-2 group">
-                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-cyan-400 to-indigo-600 p-0.5 transition-transform group-hover:rotate-12">
+                    <div className="h-10 w-10 rounded-xl bg-linear-to-br from-cyan-400 to-indigo-600 p-0.5 transition-transform group-hover:rotate-12">
                         <div className="h-full w-full bg-slate-900 rounded-[10px] flex items-center justify-center">
                             <img src={Logo} alt="Logo" className="h-7 w-7 object-contain" />
                         </div>
@@ -86,7 +85,7 @@ const Header = () => {
                 <div className="flex items-center gap-3">
                     <div className="relative" ref={dropDownRef}>
                         <button onClick={() => setOpen(!open)} className="flex items-center gap-2 p-1 pr-3 rounded-full bg-slate-800 hover:bg-slate-700 transition-colors border border-white/10">
-                            <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold uppercase text-xs">
+                            <div className="h-8 w-8 rounded-full bg-linear-to-tr from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold uppercase text-xs">
                                 {user ? user.email.toString().charAt(0) : <CgProfile size={20} />}
                             </div>
                             <div className="text-left hidden sm:block">

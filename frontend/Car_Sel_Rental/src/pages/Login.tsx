@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { login } from "../api/authService";
 import { Key, Mail, Car } from 'lucide-react';
 
@@ -9,13 +9,36 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        const userJson = localStorage.getItem('user');
+        
+        if (token && token !== "undefined" && userJson) {
+            const user = JSON.parse(userJson);
+            const targetPath = user.role === 'admin' ? "/admin/dashboard" : "/seller/dashboard";
+            navigate(targetPath, { replace: true });
+        }
+    }, [navigate]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         setLoading(true);
         e.preventDefault();
         try {
-            await login(credentials.email, credentials.password);
-            navigate("/seller/dashboard");
+            const response = await login(credentials.email, credentials.password);
+
+            const userJson = localStorage.getItem('user');
+            const user = userJson ? JSON.parse(userJson) : null;
+            const userRole = user?.role;
+
+            if (location.state?.from) {
+                navigate(location.state.from.pathname, { replace: true });
+            }
+            else {
+                const targetPath = userRole === 'seller' ? "/seller/dashboard" : "/admin/dashboard";
+                navigate(targetPath, { replace: true });
+            }
         }
         catch (err) {
             setError("Invalid email or password. Please try again.");

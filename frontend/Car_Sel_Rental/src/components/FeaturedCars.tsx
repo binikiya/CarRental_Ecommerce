@@ -31,14 +31,19 @@ const FeaturedCars = () => {
 
     const filteredCars = filter === "All" 
         ? cars 
-        : cars.filter(car => car.category === filter);
+        : cars.filter(car => car.category_name === filter);
 
     if (loading) {
-        return <div className="py-24 text-center dark:text-white">Loading Inventory...</div>;
+        return (
+            <div className="py-24 text-center">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-cyan-500 mb-4"></div>
+                <p className="dark:text-white font-bold">Scanning Inventory...</p>
+            </div>
+        );
     }
 
     return (
-        <section className="py-24 transition-colors duration-500 bg-white dark:bg-slate-950 px-6">
+        <section className="py-24 bg-white dark:bg-slate-950 px-6">
             <div className="max-w-7xl mx-auto">
                 <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16">
                     <div>
@@ -70,19 +75,20 @@ const FeaturedCars = () => {
                             <CarCard key={car.id} car={car} />
                         ))
                     ) : (
-                        <div className="col-span-full text-center py-10 dark:text-slate-400">
-                            No cars found in this category.
+                        <div className="col-span-full text-center py-20 border-2 border-dashed border-slate-200 dark:border-white/5 rounded-4xl">
+                            <p className="dark:text-slate-400 font-medium">No cars found matching these filters.</p>
+                            <button onClick={() => setFilter("All")} className="mt-4 text-cyan-500 font-bold hover:underline">Clear category filter</button>
                         </div>
                     )}
                 </div>
 
                 <div className="mt-16 text-center">
-                    <button className="inline-flex items-center gap-2 text-slate-900 dark:text-white font-bold group">
+                    <Link to="/cars" className="inline-flex items-center gap-2 text-slate-900 dark:text-white font-bold group">
                         Explore Full Catalog 
                         <span className="p-2 rounded-full bg-slate-100 dark:bg-white/5 group-hover:bg-cyan-500 group-hover:text-slate-950 transition-all">
                             <FaArrowRight />
                         </span>
-                    </button>
+                    </Link>
                 </div>
             </div>
         </section>
@@ -110,7 +116,14 @@ const CarCard = ({ car }: { car: any }) => (
                 </div>
                 <div className="text-right">
                     <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold">Price</p>
-                    <p className="text-lg font-black text-slate-900 dark:text-white">${car.price_sell}</p>
+                    <p className="text-lg font-black text-slate-900 dark:text-white">
+                        {car.price_sell 
+                            ? `$${Number(car.price_sell).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}` 
+                            : car.price_per_day 
+                                ? `$${Number(car.price_per_day).toLocaleString()}/day`
+                                : "Contact for Price"
+                        }
+                    </p>
                 </div>
             </div>
 
@@ -119,12 +132,12 @@ const CarCard = ({ car }: { car: any }) => (
                     <IoSpeedometerOutline className="text-cyan-500" size={18} />
                     <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400">{car.speed} KM/H</span>
                 </div>
-                <div className="w-[1px] h-6 bg-slate-200 dark:bg-white/10" />
+                <div className="w-px h-6 bg-slate-200 dark:bg-white/10" />
                     <div className="flex flex-col items-center gap-1">
                         <FaGasPump className="text-cyan-500" size={16} />
                         <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase">{car.fuel_type}</span>
                     </div>
-                <div className="w-[1px] h-6 bg-slate-200 dark:bg-white/10" />
+                <div className="w-px h-6 bg-slate-200 dark:bg-white/10" />
                 <div className="flex flex-col items-center gap-1">
                     <GiGearStickPattern className="text-cyan-500" size={18} />
                     <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase">{car.transmission}</span>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/api";
-import { FaCloudUploadAlt, FaCheckCircle, FaTrash } from "react-icons/fa";
+import { FaCloudUploadAlt, FaTrash } from "react-icons/fa";
 
 const UploadImages = () => {
     const { carId } = useParams();
@@ -10,6 +10,7 @@ const UploadImages = () => {
     const [previews, setPreviews] = useState<string[]>([]);
     const [uploading, setUploading] = useState(false);
     const [primaryIndex, setPrimaryIndex] = useState(0);
+    const [uploadProgress, setUploadProgress] = useState(0);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -28,24 +29,27 @@ const UploadImages = () => {
 
     const handleUpload = async () => {
         setUploading(true);
+        setUploadProgress(0);
+        
         try {
-            const uploadPromises = selectedFiles.map((file, index) => {
+            for (let i = 0; i < selectedFiles.length; i++) {
                 const formData = new FormData();
                 formData.append("car", carId!);
-                formData.append("image_url", file);
-                formData.append("is_primary", (index === primaryIndex).toString());
+                formData.append("image_file", selectedFiles[i]);
+                formData.append("is_primary", (i === primaryIndex).toString());
 
-                return api.post("/cars/car-image/", formData, {
+                await api.post("/cars/car-image/", formData, {
                     headers: { "Content-Type": "multipart/form-data" },
+                    onUploadProgress: (progressEvent) => {
+                        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total!);
+                        const totalProgress = Math.round(((i / selectedFiles.length) * 100) + (percentCompleted / selectedFiles.length));
+                        setUploadProgress(totalProgress);
+                    }
                 });
-            });
-
-            await Promise.all(uploadPromises);
-            alert("Images uploaded successfully!");
+            }
             navigate("/seller/dashboard");
         } catch (error) {
             console.error("Upload failed", error);
-            alert("Failed to upload images. Check file sizes.");
         } finally {
             setUploading(false);
         }
@@ -85,12 +89,8 @@ const UploadImages = () => {
             </div>
 
             {selectedFiles.length > 0 && (
-                <button 
-                    onClick={handleUpload} 
-                    disabled={uploading}
-                    className="w-full mt-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-2xl hover:bg-cyan-500 transition-all flex justify-center items-center gap-2"
-                >
-                    {uploading ? "Uploading..." : <><FaCheckCircle /> Finish and Publish Listing</>}
+                <button onClick={handleUpload} disabled={uploading} className="w-full mt-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-2xl hover:bg-cyan-500 transition-all flex justify-center items-center gap-2">
+                    {uploading ? `Uploading ${uploadProgress}%` : "Publish Listing"}
                 </button>
             )}
         </div>

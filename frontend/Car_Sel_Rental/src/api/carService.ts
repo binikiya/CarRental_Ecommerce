@@ -46,3 +46,22 @@ export const updateCar = async (id: number, carData: any) => {
     const response = await api.patch(`/cars/car/${id}/`, carData);
     return response.data;
 };
+
+export const getCarDetails = async (id: string) => {
+    const response = await api.get(`/cars/car/${id}/`);
+    return response.data;
+};
+
+export const getFilteredCars = async (params: any) => {
+    const response = await api.get('/cars/car/', { params });
+    return response.data;
+};
+
+export const getAdminAnalytics = async () => {
+    const response = await api.get('/seller/analytics/'); 
+    return response.data;
+};
+
+export const getSellers = () => api.get('/sellers/');
+export const toggleSellerVerify = (id: number) => api.patch(`/seller/${id}/toggle_verify/`);
+export const toggleSellerStatus = (id: number) => api.patch(`/seller/${id}/toggle_status/`);

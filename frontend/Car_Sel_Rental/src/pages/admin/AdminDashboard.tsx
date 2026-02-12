@@ -57,7 +57,7 @@ const AdminDashboard = () => {
             </header>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-                <StatCard  title="Gross Revenue" value={`${symbol}${(data.total_revenue * rate).toLocaleString()}`} change="+12%" icon={<FaMoneyBillWave />} />
+                <StatCard title="Gross Revenue" value={`${symbol}${(data.total_revenue * rate).toLocaleString()}`} change="+12%" icon={<FaMoneyBillWave />} />
                 <StatCard title="Net Commission" value={`${symbol}${(data.commission * rate).toLocaleString()}`} change="+8%" icon={<FaHandshake />} color="text-emerald-500" />
                 <StatCard title="Active Listings" value={data.active_listings} change="Live" icon={<FaCar />} color="text-blue-500" />
                 <StatCard title="Pending Disputes" value={data.pending_disputes} change="Action Required" icon={<FaExclamationCircle />} color="text-red-500" />
@@ -112,7 +112,7 @@ const StatCard = ({ title, value, change, icon, color = "text-cyan-500" }: any) 
                 {change}
             </span>
         </div>
-        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em] mb-1">{title}</p>
+        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">{title}</p>
         <h3 className="text-2xl font-black dark:text-white leading-none">{value}</h3>
     </div>
 );

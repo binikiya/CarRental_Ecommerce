@@ -12,6 +12,8 @@ import AddCar from "./pages/seller/AddCar";
 import UploadImages from "./pages/seller/UploadImages";
 import EditCar from "./pages/seller/EditCar";
 import SellerEarnings from "./pages/seller/SellerEarnings";
+import ManageOrders from "./pages/seller/ManageOrders";
+import ShopSettings from "./pages/seller/ShopSettings";
 import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ManageSellers from "./pages/admin/ManageSellers";
@@ -49,6 +51,8 @@ function App() {
                 <Route path="/seller/dashboard" element={<SellerDashboard />} />
                 <Route path="/seller/add-car" element={<AddCar />} />
                 <Route path="/seller/earnings" element={<SellerEarnings />} />
+                <Route path="/seller/orders" element={<ManageOrders />} />
+                <Route path="/seller/settings" element={<ShopSettings />} />
                 <Route path="/seller/upload-images/:carId" element={<UploadImages />} />
                 <Route path="/seller/edit-car/:id" element={<EditCar />} />
               </Route>

@@ -1,6 +1,39 @@
 import csv
 from django.http import HttpResponse
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from .models import AuditLog
+
+def send_order_notification(order):
+    """
+    Sends an email to the seller when a new order is placed.
+    """
+    seller_email = order.seller.business_email
+    subject = f'New Order Received: #{order.order_number}'
+
+    html_message = f"""
+    <html>
+        <body>
+            <h2 style="color: #10b981;">You have a new order!</h2>
+            <p><strong>Order Number:</strong> {order.order_number}</p>
+            <p><strong>Total Amount:</strong> ${order.total_amount}</p>
+            <p><strong>Order Type:</strong> {order.order_type.upper()}</p>
+            <hr/>
+            <p>Log in to your Seller Dashboard to manage fulfillment.</p>
+        </body>
+    </html>
+    """
+    plain_message = strip_tags(html_message)
+
+    send_mail(
+        subject,
+        plain_message,
+        'noreply@drivex.com',
+        [seller_email],
+        html_message=html_message,
+        fail_silently=False,
+    )
 
 def log_action(request, action_type):
     """

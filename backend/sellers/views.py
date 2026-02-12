@@ -1,4 +1,4 @@
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from .models import Seller, Commission, AuditLog, Dispute
 from rest_framework.decorators import action
 from cars.models import Car
+from cars.serializers import CarSerializer
 from .serializers import SellerSerializer, CommissionSerializer, AuditLogSerializer, DisputeSerializer
 from .helpers import log_action, export_to_csv
 
@@ -59,6 +60,33 @@ class SellerViewSet(viewsets.ModelViewSet):
             return Response({'status': f'Seller status updated to {new_status}'})
         
         return Response({'error': 'Invalid status'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SellerInventoryViewSet(viewsets.ModelViewSet):
+    serializer_class = CarSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Car.objects.filter(seller=self.request.user.seller)
+
+    def perform_create(self, serializer):
+        serializer.save(seller=self.request.user.seller)
+
+class SellerProfileViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
+
+    def retrieve(self, request):
+        seller = request.user.seller
+        serializer = SellerSerializer(seller)
+        return Response(serializer.data)
+
+    def update(self, request):
+        seller = request.user.seller
+        serializer = SellerSerializer(seller, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
 
 
 class CommissionViewSet(viewsets.ModelViewSet):

@@ -12,7 +12,6 @@ const SellerLayout = () => {
 
     const menuItems = [
         { name: 'Dashboard', path: '/seller/dashboard', icon: <FaChartBar /> },
-        { name: 'My Vehicles', path: '/seller/inventory', icon: <FaCar /> },
         { name: 'List New Car', path: '/seller/add-car', icon: <FaPlusCircle /> },
         { name: 'Sales & Rentals', path: '/seller/orders', icon: <FaReceipt /> },
         { name: 'Earnings', path: '/seller/earnings', icon: <FaChartPie /> },

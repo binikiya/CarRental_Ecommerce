@@ -1,6 +1,7 @@
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.decorators import action
 from .models import Order, OrderItem, Payment
 from .serializers import OrderSerializer, OrderItemSerializer, PaymentSerializer
 
@@ -13,7 +14,10 @@ class OrderViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Order.objects.filter(user=self.request.user)
+        user = self.request.user
+        if user.is_staff:
+            return Order.objects.all().order_by('-id')
+        return Order.objects.filter(seller=user.seller).order_by('-id')
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -28,6 +32,16 @@ class OrderViewSet(viewsets.ModelViewSet):
         if instance.status in LOCKED_STATUSES:
             raise PermissionDenied("This order cannot be deleted.")
         instance.delete()
+
+    @action(detail=True, methods=['patch'])
+    def change_status(self, request, pk=None):
+        order = self.get_object()
+        new_status = request.data.get('status')
+        if new_status in ['pending', 'paid', 'canceled', 'completed']:
+            order.payment_status = new_status
+            order.save()
+            return Response({'status': 'updated'})
+        return Response({'error': 'Invalid status'}, status=400)
 
 
 class OrderItemViewSet(viewsets.ModelViewSet):

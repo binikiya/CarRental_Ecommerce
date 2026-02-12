@@ -78,3 +78,10 @@ export const getAllUsers = () => api.get('/users/');
 export const updateUserRole = (id: number, role: string) => api.patch(`/users/${id}/update_role/`, { role });
 
 export const exportCommissionCSV = () => api.get('/seller/commission/export_csv/', { responseType: 'blob' });
+
+export const getOrders = () => api.get('/orders/');
+export const updateOrderStatus = (id: number, status: string) => 
+    api.patch(`/orders/${id}/change_status/`, { status });
+
+export const getSellerProfile = () => api.get('/seller/retrieve/');
+export const updateSellerProfile = (data: any) => api.patch('/seller/update/', data);

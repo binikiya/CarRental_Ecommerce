@@ -23,6 +23,16 @@ import CommissionSettings from "./pages/admin/CommissionSettings";
 import AuditLogs from "./pages/admin/AuditLogs";
 import ManageProducts from "./pages/admin/ManageProducts";
 
+import CustomerLayout from "./layouts/CustomerLayout";
+import CustomerDashboard from "./pages/customer/CustomerDashboard";
+import Profile from "./pages/customer/Profile";
+import MyOrders from "./pages/customer/MyOrders";
+import WishlistPage from "./pages/customer/Wishlist";
+import BookingHistory from "./pages/customer/BookingHistory";
+import ManageAddresses from "./pages/customer/ManageAddresses";
+import ManagePayments from "./pages/customer/ManagePayments";
+import ManageReviews from "./pages/customer/ManageReviews";
+
 
 function App() {
   return (
@@ -55,6 +65,19 @@ function App() {
                 <Route path="/seller/settings" element={<ShopSettings />} />
                 <Route path="/seller/upload-images/:carId" element={<UploadImages />} />
                 <Route path="/seller/edit-car/:id" element={<EditCar />} />
+              </Route>
+            </Route>
+
+            <Route element={<ProtectedRoute allowedRoles={['customer']} />}>
+              <Route element={<CustomerLayout />}>
+                <Route path="/customer/dashboard" element={<CustomerDashboard />} />
+                <Route path="/customer/profile" element={<Profile />} />
+                <Route path="/customer/orders" element={<MyOrders />} />
+                <Route path="/customer/wishlist" element={<WishlistPage />} />
+                <Route path="/customer/history" element={<BookingHistory />} />
+                <Route path="/customer/addresses" element={<ManageAddresses />} />
+                <Route path="/customer/payments" element={<ManagePayments />} />
+                <Route path="/customer/reviews" element={<ManageReviews />} />
               </Route>
             </Route>
 

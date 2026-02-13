@@ -17,7 +17,14 @@ const Login = () => {
         
         if (token && token !== "undefined" && userJson) {
             const user = JSON.parse(userJson);
-            const targetPath = user.role === 'admin' ? "/admin/dashboard" : "/seller/dashboard";
+            const targetRole = user.role;
+            let targetPath = "/customer/dashboard";
+
+            if (targetRole === "admin")
+                targetPath = "/admin/dashboard";
+            if (targetRole === "seller")
+                targetPath = "/seller/dashboard";
+
             navigate(targetPath, { replace: true });
         }
     }, [navigate]);
@@ -36,7 +43,14 @@ const Login = () => {
                 navigate(location.state.from.pathname, { replace: true });
             }
             else {
-                const targetPath = userRole === 'seller' ? "/seller/dashboard" : "/admin/dashboard";
+                const targetRole = user.role;
+                let targetPath = "/customer/dashboard";
+
+                if (targetRole === "admin")
+                    targetPath = "/admin/dashboard";
+                if (targetRole === "seller")
+                    targetPath = "/seller/dashboard";
+                
                 navigate(targetPath, { replace: true });
             }
         }

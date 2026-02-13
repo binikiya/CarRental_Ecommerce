@@ -17,3 +17,9 @@ export const logout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('role');
 };
+
+//User Profile
+export const getProfile = () => api.get('/me/');
+export const updateProfile = (data: any) => api.patch('/me/', data);
+export const changePassword = (data: any) => api.post('/change-password/', data);
+export const deactivateAccount = () => api.post('/deactivate/');

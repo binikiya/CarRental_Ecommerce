@@ -1,6 +1,7 @@
 from . import views
 from authenticate.views import RegisterViewSet, LoginViewSet, RefreshTokenViewSet
 from rest_framework import routers
+from django.urls import path
 
 router = routers.SimpleRouter()
 
@@ -20,5 +21,8 @@ router.register(r'', views.UserListView, basename='user')
 
 
 urlpatterns = [
+    path('me/', views.UserListView.as_view({'get': 'manage_profile'}), name='Customer-Profile'),
+    path('change-password/', views.UserListView.as_view({'get': 'change_password'}), name='ChangePassword-Profile'),
+    path('deactivate/', views.UserListView.as_view({'get': 'deactivate_account'}), name='DeactivateAccount-Profile'),
     *router.urls,
 ]

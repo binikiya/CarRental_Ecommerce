@@ -2,10 +2,42 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.decorators import action
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.db.models import Sum, Q
 from .models import Order, OrderItem, Payment
+from users.models import Wishlist
 from .serializers import OrderSerializer, OrderItemSerializer, PaymentSerializer
 
 LOCKED_STATUSES = ['paid', 'completed', 'canceled']
+
+
+class CustomerDashboardSummary(APIView):
+    def get(self, request):
+        user = request.user
+
+        active_bookings = Order.objects.filter(
+            user=user, 
+            order_type='rent', 
+            payment_status__in=['paid', 'pending']
+        ).count()
+
+        wishlist_count = Wishlist.objects.filter(user=user).count()
+
+        total_spent = Order.objects.filter(
+            user=user, 
+            payment_status__in=['paid', 'completed']
+        ).aggregate(Sum('total_amount'))['total_amount__sum'] or 0
+
+        recent_orders = Order.objects.filter(user=user).order_by('-id')[:3]
+        serializer = OrderSerializer(recent_orders, many=True)
+
+        return Response({
+            "active_bookings": active_bookings,
+            "wishlist_count": wishlist_count,
+            "total_spent": total_spent,
+            "recent_activity": serializer.data
+        })
 
 
 class OrderViewSet(viewsets.ModelViewSet):
@@ -32,6 +64,19 @@ class OrderViewSet(viewsets.ModelViewSet):
         if instance.status in LOCKED_STATUSES:
             raise PermissionDenied("This order cannot be deleted.")
         instance.delete()
+    
+    @action(detail=True, methods=['patch'])
+    def request_cancel(self, request, pk=None):
+        order = self.get_object()
+        if order.user != request.user:
+            return Response({"error": "Forbidden"}, status=403)
+        
+        order.payment_status = 'canceled'
+        order.canceled_at = timezone.now()
+        order.save()
+        
+        log_action(request, 'update')
+        return Response({"status": "Cancellation requested"})
 
     @action(detail=True, methods=['patch'])
     def change_status(self, request, pk=None):

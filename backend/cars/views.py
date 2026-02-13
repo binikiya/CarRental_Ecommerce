@@ -1,9 +1,21 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.exceptions import PermissionDenied
+from django_filters import rest_framework as filters
 from .models import Category, Brand, Car, RentalAvailability, Rental, CarImage
 from .serializers import CategorySerializer, BrandSerializer, CarSerializer, RentalSerializer, RentalAvailabilitySerializer, CarImageSerializer
 from sellers.helpers import log_action
+
+
+class CarFilter(filters.FilterSet):
+    min_price = filters.NumberFilter(field_name="price", lookup_expr='gte')
+    max_price = filters.NumberFilter(field_name="price", lookup_expr='lte')
+    brand = filters.CharFilter(lookup_expr='icontains')
+    category = filters.CharFilter(lookup_expr='iexact')
+
+    class Meta:
+        model = Car
+        fields = ['brand', 'category', 'transmission', 'fuel_type', 'car_type']
 
 
 class CategoryViwSet(viewsets.ModelViewSet):

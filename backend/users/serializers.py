@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import User, SavedAddress, PaymentMethod, Review, Wishlist
+from cars.serializers import CarSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -39,7 +40,8 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 class WishlistSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    car_details = CarSerializer(source='car', read_only=True)
 
     class Meta:
         model = Wishlist
-        fields = ['id', 'user', 'car', 'created_at']
+        fields = ['id', 'user', 'car', 'car_details', 'created_at']

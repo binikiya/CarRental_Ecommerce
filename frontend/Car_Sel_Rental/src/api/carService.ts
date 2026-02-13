@@ -85,3 +85,31 @@ export const updateOrderStatus = (id: number, status: string) =>
 
 export const getSellerProfile = () => api.get('/seller/retrieve/');
 export const updateSellerProfile = (data: any) => api.patch('/seller/update/', data);
+
+// Customer Dashboard
+export const getDashboardSummary = () => api.get('/orders/dashboard/');
+
+// Wishlists
+export const getWishlist = () => api.get('/users/wishlist/');
+export const toggleWishlist = (car_id: number) => api.post('/users/wishlist/toggle/', { car_id });
+
+// Addresses
+export const getAddresses = () => api.get('/addresses/');
+export const addAddress = (data: any) => api.post('/addresses/', data);
+export const deleteAddress = (id: number) => api.delete(`/addresses/${id}/`);
+export const setDefaultAddress = (id: number) => api.post(`/addresses/${id}/set_default/`);
+
+// Payments
+export const getPayments = () => api.get('/payments/');
+export const deletePayment = (id: number) => api.delete(`/payments/${id}/`);
+
+//Reviews
+export const getMyReviews = () => api.get('/customer-reviews/');
+export const updateReview = (id: number, data: any) => api.patch(`/customer-reviews/${id}/`, data);
+export const deleteReview = (id: number) => api.delete(`/customer-reviews/${id}/`);
+
+//User Profile
+export const getProfile = () => api.get('/users/me/');
+export const updateProfile = (data: any) => api.patch('/users/me/', data);
+export const changePassword = (data: any) => api.post('/users/change-password/', data);
+export const deactivateAccount = () => api.post('/users/deactivate/');

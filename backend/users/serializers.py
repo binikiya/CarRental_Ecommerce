@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, SavedAddress, PaymentMethod, Review, Wishlist
+from .models import User, SavedAddress, PaymentMethod, Review, Wishlist, Inquiry
 from cars.serializers import CarSerializer
 
 

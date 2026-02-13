@@ -3,12 +3,12 @@ from .models import Order, OrderItem, Payment
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
-    car_name = serializers.CharField(source='car.title', read_only=True)
+    car_name = serializers.ReadOnlyField(source='car.title')
     car_image = serializers.ImageField(source='car.main_image', read_only=True)
 
     class Meta:
         model = OrderItem
-        fields = ['id', 'order', 'car', 'price_snapshot', 'quantity', 'rental_start_date', 'rental_end_date', 'created_at']
+        fields = ['id', 'order', 'car', 'car_name', 'car_image', 'price_snapshot', 'quantity', 'rental_start_date', 'rental_end_date', 'created_at']
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -17,7 +17,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['id', 'user', 'order_type', 'status', 'total_amount', 'quantity', 'created_at', 'updated_at', 'paid_at', 'canceled_at', 'completed_at']
+        fields = ['id', 'user', 'seller', 'order_type', 'order_number', 'payment_status', 'total_amount', 'payment_provider', 'billing_address_json', 'quantity', 'payment_reference', 'paid_at', 'canceled_at', 'completed_at', 'items', 'customer_email']
 
 
 class PaymentSerializer(serializers.ModelSerializer):

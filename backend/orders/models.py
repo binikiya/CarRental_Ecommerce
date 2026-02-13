@@ -29,9 +29,9 @@ class Order(models.Model):
     order_type = models.CharField(max_length=50, choices=ORDER_CHOICES)
     payment_status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='pending')
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    payment_provider = models.CharField(max_length=50, choices=PAYMENT_PROVIDER_CHOICES)
-    billing_address_json = models.JSONField()
-    quantity = models.PositiveIntegerField()
+    payment_provider = models.CharField(max_length=50, choices=PAYMENT_PROVIDER_CHOICES, null=True, blank=True)
+    billing_address_json = models.JSONField(null=True, blank=True)
+    quantity = models.PositiveIntegerField(default=1)
     payment_reference = models.CharField(max_length=255, null=True, blank=True)
 
     paid_at = models.DateTimeField(null=True, blank=True)
@@ -53,7 +53,7 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items')
     car = models.ForeignKey("cars.Car", on_delete=models.PROTECT, related_name='order_items')
     price_snapshot = models.DecimalField(max_digits=10, decimal_places=2)
-    quantity = models.PositiveIntegerField()
+    quantity = models.PositiveIntegerField(default=1)
 
     rental_start_date = models.DateField(null=True, blank=True)
     rental_end_date = models.DateField(null=True, blank=True)

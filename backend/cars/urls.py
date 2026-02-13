@@ -1,5 +1,6 @@
 from .views import CategoryViwSet, BrandViewSet, CarViewSet, RentalAvailabilityViewSet, RentalViewSet, CarImageViewSet
 from rest_framework import routers
+from django.urls import path
 
 router = routers.SimpleRouter()
 

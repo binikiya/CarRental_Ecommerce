@@ -5,8 +5,6 @@ import toast from "react-hot-toast";
 
 const ManageAddresses = () => {
     const [addresses, setAddresses] = useState<any[]>([]);
-    
-    useEffect(() => { fetchAddresses(); }, []);
 
     const fetchAddresses = async () => {
         const res = await getAddresses();
@@ -18,6 +16,8 @@ const ManageAddresses = () => {
         toast.success("Default address updated");
         fetchAddresses();
     };
+
+    useEffect(() => { fetchAddresses(); }, []);
 
     return (
         <div className="space-y-8 animate-in fade-in duration-700 mt-15">

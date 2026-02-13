@@ -63,7 +63,7 @@ const Header = () => {
             : "bg-slate-500 py-4"
         }`}>
             <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-                <Link to="#" className="flex items-center gap-2 group">
+                <Link to="/" className="flex items-center gap-2 group">
                     <div className="h-10 w-10 rounded-xl bg-linear-to-br from-cyan-400 to-indigo-600 p-0.5 transition-transform group-hover:rotate-12">
                         <div className="h-full w-full bg-slate-900 rounded-[10px] flex items-center justify-center">
                             <img src={Logo} alt="Logo" className="h-7 w-7 object-contain" />

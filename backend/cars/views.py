@@ -2,7 +2,12 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.exceptions import PermissionDenied
 from django_filters import rest_framework as filters
+from rest_framework.decorators import action
+from rest_framework.response import Response
+import uuid
 from .models import Category, Brand, Car, RentalAvailability, Rental, CarImage
+from orders.models import Order, OrderItem
+from users.models import Inquiry
 from .serializers import CategorySerializer, BrandSerializer, CarSerializer, RentalSerializer, RentalAvailabilitySerializer, CarImageSerializer
 from sellers.helpers import log_action
 
@@ -71,7 +76,7 @@ class CarViewSet(viewsets.ModelViewSet):
         return [IsAuthenticated()]
 
     def get_queryset(self):
-        if self.action in ['list', 'retrieve']:
+        if self.action in ['list', 'retrieve', 'book_car', 'contact_seller']:
             return Car.objects.filter(status='active', is_available=True)
 
         user = self.request.user
@@ -83,6 +88,47 @@ class CarViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(seller=self.request.user.seller)
+
+    @action(detail=True, methods=['post'], url_path='book_car')
+    def book_car(self, request, pk=None):
+        car = self.get_object()
+        if car.car_type == 'rent':
+            price_snapshot = getattr(car, 'price_per_day', car.price_per_day)
+
+        else:
+            price_snapshot = getattr(car, 'price_sell', car.price_sell)
+
+        default_address = {
+            "address": "Pending Checkout",
+            "city": "Pending",
+            "country": "Pending"
+        }
+
+        order = Order.objects.create(
+            user=request.user,
+            seller=car.seller,
+            order_number=f"ORD-{uuid.uuid4().hex[:8].upper()}",
+            total_amount=price_snapshot,
+            order_type='rent' if car.car_type == 'rent' else 'sell',
+            payment_status='pending',
+            quantity=1,
+            billing_address_json=default_address,
+            payment_provider='stripe'
+        )
+
+        OrderItem.objects.create(order=order, car=car, price_snapshot=price_snapshot)
+        return Response({
+            "status": "Booking created", 
+            "order_id": order.id,
+            "order_number": order.order_number
+        })
+
+    @action(detail=True, methods=['post'])
+    def contact_seller(self, request, pk=None):
+        car = self.get_object()
+        message = request.data.get('message')
+        Inquiry.objects.create(user=request.user, car=car, message=message)
+        return Response({"status": "Message sent to seller"})
 
 
 class RentalAvailabilityViewSet(viewsets.ModelViewSet):

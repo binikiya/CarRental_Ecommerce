@@ -193,3 +193,13 @@ class Wishlist(models.Model):
 
     def __str__(self):
         return f"Wishlist Item {self.id} - User: {self.user.email} - Car: {self.car.title}"
+
+
+class Inquiry(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    car = models.ForeignKey('cars.Car', on_delete=models.CASCADE)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Inquiry by {self.user.username} for {self.car.title}"

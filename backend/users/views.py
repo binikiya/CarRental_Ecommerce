@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from django.contrib.auth.hashers import check_password
 from rest_framework.response import Response
 from rest_framework import status
+from datetime import date
 from .models import User, SavedAddress, PaymentMethod, Review, Wishlist
 from .serializers import UserSerializer, SavedAddressSerializer, PaymentMethodSerializer, ReviewSerializer, WishlistSerializer
 
@@ -100,6 +101,11 @@ class PaymentMethodViewSet(viewsets.ModelViewSet):
         obj = PaymentMethod.objects.get_object_by_public_id(self.kwargs['pk'])
         self.check_object_permissions(self.request, obj)
         return obj
+
+    def clean(self):
+        today = date.today()
+        if self.expiry_year < today.year or (self.expiry_year == today.year and self.expiry_month < today.month):
+            raise ValidationError("Payment method has expired.")
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

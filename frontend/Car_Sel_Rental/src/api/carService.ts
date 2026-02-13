@@ -80,6 +80,7 @@ export const updateUserRole = (id: number, role: string) => api.patch(`/users/${
 export const exportCommissionCSV = () => api.get('/seller/commission/export_csv/', { responseType: 'blob' });
 
 export const getOrders = () => api.get('/orders/');
+export const requestOrderCancel = (orderId: number) => api.patch(`/orders/${orderId}/request_cancel/`);
 export const updateOrderStatus = (id: number, status: string) => 
     api.patch(`/orders/${id}/change_status/`, { status });
 
@@ -94,22 +95,27 @@ export const getWishlist = () => api.get('/users/wishlist/');
 export const toggleWishlist = (car_id: number) => api.post('/users/wishlist/toggle/', { car_id });
 
 // Addresses
-export const getAddresses = () => api.get('/addresses/');
-export const addAddress = (data: any) => api.post('/addresses/', data);
-export const deleteAddress = (id: number) => api.delete(`/addresses/${id}/`);
-export const setDefaultAddress = (id: number) => api.post(`/addresses/${id}/set_default/`);
+export const getAddresses = () => api.get('/users/saved-addresses/');
+export const addAddress = (data: any) => api.post('/users/saved-addresses/', data);
+export const deleteAddress = (id: number) => api.delete(`/users/saved-addresses/${id}/`);
+export const setDefaultAddress = (id: number) => api.post(`/users/saved-addresses/${id}/set_default/`);
 
 // Payments
-export const getPayments = () => api.get('/payments/');
-export const deletePayment = (id: number) => api.delete(`/payments/${id}/`);
+export const getPayments = () => api.get('/users/payment-methods/');
+export const deletePayment = (id: number) => api.delete(`/users/payment-methods/${id}/`);
+export const setDefaultPayment = (id: number) => api.post(`/users/payment-methods/${id}/set_default/`);
 
-//Reviews
-export const getMyReviews = () => api.get('/customer-reviews/');
-export const updateReview = (id: number, data: any) => api.patch(`/customer-reviews/${id}/`, data);
-export const deleteReview = (id: number) => api.delete(`/customer-reviews/${id}/`);
+// Reviews
+export const getMyReviews = () => api.get('/users/reviews/');
+export const updateReview = (id: number, data: any) => api.patch(`/users/reviews/${id}/`, data);
+export const deleteReview = (id: number) => api.delete(`/users/reviews/${id}/`);
 
-//User Profile
+// User Profile
 export const getProfile = () => api.get('/users/me/');
 export const updateProfile = (data: any) => api.patch('/users/me/', data);
 export const changePassword = (data: any) => api.post('/users/change-password/', data);
 export const deactivateAccount = () => api.post('/users/deactivate/');
+
+// Inquiry
+export const bookCar = (id: number) => api.post(`/cars/car/${id}/book_car/`);
+export const contactSeller = (id: number, message: string) => api.post(`/cars/car/${id}/contact_seller/`, { message });

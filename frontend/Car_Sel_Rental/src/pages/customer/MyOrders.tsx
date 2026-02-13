@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaBox, FaDownload, FaHeadset, FaChevronRight } from "react-icons/fa";
+import { FaDownload, FaHeadset, FaChevronRight } from "react-icons/fa";
 import { getOrders } from "../../api/carService";
 import { useCurrency } from "../../context/CurrencyContext";
 

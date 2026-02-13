@@ -14,8 +14,13 @@ const Profile = () => {
     const handleUpdateProfile = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await updateProfile(profile);
+            const res = await updateProfile(profile);
             toast.success("Profile updated!");
+
+            const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+            const updatedUser = { ...currentUser, ...res.data };
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+            
         } catch { toast.error("Failed to update profile"); }
     };
 

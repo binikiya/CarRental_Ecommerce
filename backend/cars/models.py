@@ -243,3 +243,10 @@ class CarImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.car.title}"
+
+
+class CarDocument(models.Model):
+    car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='documents')
+    doc_type = models.CharField(max_length=50)
+    file = models.FileField(upload_to='car_docs/')
+    is_verified = models.BooleanField(default=False)

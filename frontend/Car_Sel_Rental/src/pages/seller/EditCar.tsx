@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { updateCar, getCarById } from "../../api/carService";
+import api from "../../api/api";
 import Toast from "../../components/Toast";
 
 const EditCar = () => {
@@ -16,6 +17,12 @@ const EditCar = () => {
         };
         fetchCar();
     }, [id]);
+
+    const handleBlockDates = async (dates: string[]) => {
+        // dates = ["2026-02-20", "2026-02-21"]
+        await api.post(`/cars/${id}/block_availability/`, { dates });
+        setToast({ show: true, message: "Dates blocked!" });
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

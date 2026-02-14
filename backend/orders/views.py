@@ -60,12 +60,12 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         order = self.get_object()
-        if order.status in LOCKED_STATUSES:
+        if order.payment_status in LOCKED_STATUSES:
             raise PermissionDenied("This order cannot be modified.")
         serializer.save()
 
     def perform_destroy(self, instance):
-        if instance.status in LOCKED_STATUSES:
+        if instance.payment_status in LOCKED_STATUSES:
             raise PermissionDenied("This order cannot be deleted.")
         instance.delete()
     

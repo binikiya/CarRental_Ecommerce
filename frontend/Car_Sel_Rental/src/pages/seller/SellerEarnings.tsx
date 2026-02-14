@@ -1,11 +1,23 @@
 import { useEffect, useState } from "react";
 import { FaPiggyBank, FaArrowCircleUp, FaFileInvoiceDollar, FaChartLine } from "react-icons/fa";
+import api from "../../api/api";
+import toast from "react-hot-toast";
 import { getCommissions } from "../../api/carService";
 import { useCurrency } from "../../context/CurrencyContext";
 
 const SellerEarnings = () => {
     const [myCommissions, setMyCommissions] = useState<any[]>([]);
     const { symbol, rate } = useCurrency();
+
+    const handlePayoutRequest = async () => {
+        try {
+            await api.post('/payouts/request/', { amount: totalNet });
+            toast.success("Payout request submitted! Expect funds in 2-3 days.");
+        }
+        catch (err) {
+            toast.error("Failed to process payout.");
+        }
+    };
 
     useEffect(() => {
         getCommissions().then(res => setMyCommissions(res.data));
@@ -25,6 +37,9 @@ const SellerEarnings = () => {
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Available Balance</p>
                     <h2 className="text-3xl font-black text-emerald-500">{symbol}{(totalNet * rate).toLocaleString()}</h2>
                 </div>
+                <button onClick={handlePayoutRequest} className="px-4 py-4 bg-slate-800 text-slate-200 text-[10px] font-black rounded-lg hover:bg-yellow-500 transition-all">
+                    REQUEST WITHDRAWAL
+                </button>
             </header>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

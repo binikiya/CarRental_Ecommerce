@@ -14,7 +14,6 @@ const SellerDashboard = () => {
     const [filteredCars, setFilteredCars] = useState<Car[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
-    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     const openDeleteModal = (id: number) => {
@@ -128,7 +127,7 @@ const SellerDashboard = () => {
                                         </div>
                                     </td>
                                     <td className="p-6 dark:text-white font-medium">
-                                        {car.car_type === 'rent' ? `$${car.price_per_day}/day` : `$${car.price_sell}`}
+                                        {car.car_type === 'rent' ? `$${car.price_per_day}/day` : `$${Number(car.price_sell).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`}
                                     </td>
                                     <td className="p-6">
                                         <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${

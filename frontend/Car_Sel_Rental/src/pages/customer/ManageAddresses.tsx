@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { FaMapMarkerAlt, FaPlus, FaTrash, FaCheckCircle, FaHome } from "react-icons/fa";
+import { FaPlus, FaTrash, FaCheckCircle, FaHome } from "react-icons/fa";
 import { getAddresses, deleteAddress, setDefaultAddress } from "../../api/carService";
 import toast from "react-hot-toast";
+import AddAddressModal from "../../components/AddAddressModal";
 
 const ManageAddresses = () => {
     const [addresses, setAddresses] = useState<any[]>([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const fetchAddresses = async () => {
         const res = await getAddresses();
@@ -26,7 +28,7 @@ const ManageAddresses = () => {
                     <h1 className="text-4xl font-black dark:text-white">Saved <span className="text-indigo-600">Addresses</span></h1>
                     <p className="text-slate-500 text-sm italic">Manage your shipping and billing destinations.</p>
                 </div>
-                <button className="px-6 py-3 bg-indigo-600 text-white font-bold rounded-2xl flex items-center gap-2 hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/20">
+                <button onClick={() => setIsModalOpen(true)} className="px-6 py-3 bg-indigo-600 text-white font-bold rounded-2xl flex items-center gap-2 hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/20">
                     <FaPlus /> Add New
                 </button>
             </header>
@@ -69,6 +71,7 @@ const ManageAddresses = () => {
                     </div>
                 ))}
             </div>
+            <AddAddressModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onRefresh={fetchAddresses} />
         </div>
     );
 };

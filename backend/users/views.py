@@ -5,6 +5,7 @@ from django.contrib.auth.hashers import check_password
 from rest_framework.response import Response
 from rest_framework import status
 from datetime import date
+from django.core.exceptions import ValidationError
 from .models import User, SavedAddress, PaymentMethod, Review, Wishlist
 from .serializers import UserSerializer, SavedAddressSerializer, PaymentMethodSerializer, ReviewSerializer, WishlistSerializer
 
@@ -68,7 +69,14 @@ class SavedAddressViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         is_first = not SavedAddress.objects.filter(user=self.request.user).exists()
-        serializer.save(user=self.request.user, is_default=is_first)
+        is_default = self.request.data.get('is_default', False) or is_first
+        
+        serializer.save(user=self.request.user, is_default=is_default)
+
+    def save(self, *args, **kwargs):
+        if self.is_default:
+            SavedAddress.objects.filter(user=self.user).update(is_default=False)
+        super().save(*args, **kwargs)
 
     @action(detail=True, methods=['post'])
     def set_default(self, request, pk=None):

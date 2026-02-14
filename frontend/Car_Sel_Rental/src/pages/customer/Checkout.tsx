@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getAddresses, getPayments } from "../../api/carService";
 import api from "../../api/api";
-import { FaMapMarkerAlt, FaCreditCard, FaLock, FaCheckCircle } from "react-icons/fa";
+import { FaMapMarkerAlt, FaCreditCard, FaLock } from "react-icons/fa";
 import toast from "react-hot-toast";
 
 const Checkout = () => {
     const { orderId } = useParams();
     const navigate = useNavigate();
-    
+
     const [order, setOrder] = useState<any>(null);
     const [addresses, setAddresses] = useState([]);
     const [payments, setPayments] = useState([]);
@@ -27,6 +27,13 @@ const Checkout = () => {
                 setOrder(orderRes.data);
                 setAddresses(addrRes.data);
                 setPayments(payRes.data);
+
+                const defaultAddr = addrRes.data.find((a: any) => a.is_default);
+                if (defaultAddr) setSelectedAddress(defaultAddr);
+
+                const defaultPay = payRes.data.find((p: any) => p.is_default);
+                if (defaultPay) setSelectedPayment(defaultPay);
+
             } catch (err) {
                 toast.error("Failed to load checkout data");
             }
@@ -80,7 +87,7 @@ const Checkout = () => {
                                         selectedAddress?.id === addr.id ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-500/10' : 'border-slate-100 dark:border-white/5 bg-white dark:bg-slate-900'
                                     }`}
                                 >
-                                    <p className="font-bold dark:text-white">{addr.address_line1}</p>
+                                    <p className="font-bold dark:text-white">{addr.street}</p>
                                     <p className="text-xs text-slate-500">{addr.city}, {addr.country}</p>
                                 </div>
                             ))}

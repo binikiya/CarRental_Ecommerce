@@ -15,7 +15,7 @@ const SellerLayout = () => {
         { name: 'List New Car', path: '/seller/add-car', icon: <FaPlusCircle /> },
         { name: 'Sales & Rentals', path: '/seller/orders', icon: <FaReceipt /> },
         { name: 'Earnings', path: '/seller/earnings', icon: <FaChartPie /> },
-        { name: 'Shop Settings', path: '/seller/settings', icon: <FaCog /> },
+        { name: 'Seller Profile', path: '/seller/settings', icon: <FaCog /> },
     ];
 
     return (

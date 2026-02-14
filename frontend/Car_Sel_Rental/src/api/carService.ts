@@ -102,6 +102,7 @@ export const setDefaultAddress = (id: number) => api.post(`/users/saved-addresse
 
 // Payments
 export const getPayments = () => api.get('/users/payment-methods/');
+export const addPayments = (data: any) => api.post('/users/payment-methods/', data);
 export const deletePayment = (id: number) => api.delete(`/users/payment-methods/${id}/`);
 export const setDefaultPayment = (id: number) => api.post(`/users/payment-methods/${id}/set_default/`);
 

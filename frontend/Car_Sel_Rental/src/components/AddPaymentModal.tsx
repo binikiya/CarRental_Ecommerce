@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaLock, FaTimes, FaCreditCard } from "react-icons/fa";
-import { getPayments } from "../api/carService";
+import { addPayments, getProfile } from "../api/carService";
 import toast from "react-hot-toast";
 
 const AddPaymentModal = ({ isOpen, onClose, onRefresh }: any) => {
     const [formData, setFormData] = useState({
+        user: '',
         provider: 'stripe',
         card_brand: 'Visa',
         last4: '',
@@ -13,6 +14,10 @@ const AddPaymentModal = ({ isOpen, onClose, onRefresh }: any) => {
         is_default: false
     });
 
+    useEffect(() => {
+        getProfile().then(res => setFormData({...formData, user: res.data.id}));
+    }, []);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
@@ -20,11 +25,12 @@ const AddPaymentModal = ({ isOpen, onClose, onRefresh }: any) => {
                 ...formData,
                 payment_token: `tok_mock_${Math.random().toString(36).substr(2, 9)}`
             };
-            await getPayments(payload);
+            await addPayments(payload);
             toast.success("Payment method secured!");
             onRefresh();
             onClose();
-        } catch (err) {
+        }
+        catch (err) {
             toast.error("Failed to save card. Check expiry date.");
         }
     };

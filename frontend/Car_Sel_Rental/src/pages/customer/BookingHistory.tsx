@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaCalendarAlt, FaFilePdf, FaBan, FaSync } from "react-icons/fa";
+import { MdIncompleteCircle } from "react-icons/md";
 import { getOrders, requestOrderCancel } from "../../api/carService";
 import { useCurrency } from "../../context/CurrencyContext";
 import toast from "react-hot-toast";
@@ -8,6 +10,7 @@ const BookingHistory = () => {
     const [orders, setOrders] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const { symbol, rate } = useCurrency();
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchHistory();
@@ -83,6 +86,15 @@ const BookingHistory = () => {
                             </div>
                             
                             <div className="flex gap-2">
+                                {order.payment_status === 'pending' && (
+                                    <button title="Complete Payment"
+                                        onClick={() => navigate(`/customer/checkout/${order.id}`)}
+                                        className="px-4 py-2 bg-indigo-50 dark:bg-white/5 text-blue-400 rounded-2xl hover:text-green-600 hover:bg-blue-200 font-black rounded-lg uppercase"
+                                    >
+                                        <MdIncompleteCircle  size={18}/>
+                                    </button>
+                                )}
+
                                 <button 
                                     title="Download Invoice" 
                                     className="p-4 bg-slate-50 dark:bg-white/5 rounded-2xl text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-all"

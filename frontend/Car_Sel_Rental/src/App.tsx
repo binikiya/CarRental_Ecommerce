@@ -5,6 +5,7 @@ import Footer from './pages/Footer';
 import Home from './pages/Home';
 import CarDetails from "./components/CarDetails";
 import Login from "./pages/Login";
+
 import SellerLayout from "./layouts/SellerLayout";
 import SellerDashboard from "./pages/seller/SellerDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -14,6 +15,7 @@ import EditCar from "./pages/seller/EditCar";
 import SellerEarnings from "./pages/seller/SellerEarnings";
 import ManageOrders from "./pages/seller/ManageOrders";
 import ShopSettings from "./pages/seller/ShopSettings";
+
 import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ManageSellers from "./pages/admin/ManageSellers";
@@ -32,6 +34,7 @@ import BookingHistory from "./pages/customer/BookingHistory";
 import ManageAddresses from "./pages/customer/ManageAddresses";
 import ManagePayments from "./pages/customer/ManagePayments";
 import ManageReviews from "./pages/customer/ManageReviews";
+import Checkout from "./pages/customer/Checkout";
 
 
 function App() {
@@ -78,6 +81,7 @@ function App() {
                 <Route path="/customer/addresses" element={<ManageAddresses />} />
                 <Route path="/customer/payments" element={<ManagePayments />} />
                 <Route path="/customer/reviews" element={<ManageReviews />} />
+                <Route path="/customer/checkout/:orderId" element={<Checkout />} />
               </Route>
             </Route>
 

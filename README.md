@@ -76,7 +76,7 @@ This is multivendor ecommerce website. Customers can purchase web scripts in var
     - Upload car documents (RC, insurance)
     - Earnings & payouts
     - Sales & rental analytics
-    - Chat with customers (optional but powerful)
+    - Chat with customers
 --------------------------------------------
 - Admin Panel
     - Manage Sellers

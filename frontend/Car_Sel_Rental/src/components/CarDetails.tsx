@@ -26,11 +26,13 @@ const CarDetails = () => {
         setLoading(true);
         try {
             const res = await bookCar(Number(id));
-            toast.success(`Order ${res.data.order_number} created!`);
-            navigate(`/customer/orders`); 
+            toast.success("Booking created! Let's finalize payment.");
+
+            navigate(`/customer/checkout/${res.data.order_id}`); 
+            
         }
         catch (err: any) {
-            toast.error(err.response?.data?.error || "Please login to book this car.");
+            toast.error("Please login to book this car.");
         }
         finally {
             setLoading(false);

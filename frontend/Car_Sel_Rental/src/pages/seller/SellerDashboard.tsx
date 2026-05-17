@@ -45,6 +45,12 @@ const SellerDashboard = () => {
         }
     };
 
+    const getStockStatus = (quantity: number) => {
+        if (quantity === 0) return { label: "Sold Out", color: "bg-red-500", text: "text-white" };
+        if (quantity <= 2) return { label: "Low Stock", color: "bg-orange-500", text: "text-white" };
+        return { label: "In Stock", color: "bg-emerald-500/10", text: "text-emerald-500" };
+    };
+
     useEffect(() => {
         const fetchMyCars = async () => {
             const data = await getCars();
@@ -118,7 +124,7 @@ const SellerDashboard = () => {
                             {myCars.map((car) => (
                                 <tr key={car.id} className="group hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors">
                                     <td className="p-6">
-                                        <div className="flex items-center gap-4">
+                                        <div className="flex items-center gap-3">
                                             <img src={car.displayImage} className="w-12 h-12 rounded-xl object-cover" />
                                             <div>
                                                 <p className="font-bold dark:text-white">{car.title}</p>
@@ -135,6 +141,12 @@ const SellerDashboard = () => {
                                         }`}>
                                             {car.status}
                                         </span>
+                                        <div className="flex items-center gap-2">
+                                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${getStockStatus(car.quantity).color} ${getStockStatus(car.quantity).text}`}>
+                                                {getStockStatus(car.quantity).label}
+                                            </span>
+                                            <span className="text-slate-500 font-bold text-xs">{car.quantity} units left</span>
+                                        </div>
                                     </td>
                                     <td className="p-6 text-right">
                                         <button onClick={() => navigate(`/seller/edit-car/${car.id}`)}className="p-2 mr-2 bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white rounded-lg transition-all" title="Edit Listing">

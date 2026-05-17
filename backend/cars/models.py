@@ -105,6 +105,7 @@ class Car(models.Model):
     model_year = models.PositiveIntegerField()
     fuel_type = models.CharField(max_length=50, choices=FUEL_CHOICES)
     transmission = models.CharField(max_length=50, choices=TRANSMISSION_CHOICES)
+    quantity = models.IntegerField(default=1)
     mileage = models.PositiveIntegerField(help_text="Mileage in kilometers")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
     views_count = models.PositiveIntegerField(default=0)
@@ -250,3 +251,12 @@ class CarDocument(models.Model):
     doc_type = models.CharField(max_length=50)
     file = models.FileField(upload_to='car_docs/')
     is_verified = models.BooleanField(default=False)
+
+
+class CarBlockDate(models.Model):
+    car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='blocked_dates')
+    date = models.DateField()
+    reason = models.CharField(max_length=255, blank=True)
+
+    class Meta:
+        unique_together = ('car', 'date')

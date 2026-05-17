@@ -56,6 +56,13 @@ const Header = () => {
         { name: "Buy/Rent", path: "/rent" },
     ];
 
+    const getUserRole = (role: string) => {
+        if (role === "admin") return { label: "admin/dashboard", color: "bg-purple-500", text: "text-white" };
+        if (role === "seller") return { label: "seller/dashboard", color: "bg-cyan-500", text: "text-white" };
+        if (role === "customer") return { label: "customer/dashboard", color: "bg-green-500", text: "text-white" };
+        return { label: "Guest", color: "bg-slate-500", text: "text-white" };
+    };
+
     return (
         <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${
             scrolled 
@@ -102,7 +109,7 @@ const Header = () => {
                             <div className="absolute right-0 mt-3 w-56 origin-top-right rounded-2xl border border-white/10 bg-slate-900/95 backdrop-blur-xl shadow-2xl p-2 animate-in fade-in zoom-in duration-200">
                                 {token ? (
                                     <>
-                                        <Link to="/seller/dashboard" onClick={() => setOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-slate-300 hover:bg-white/5 rounded-xl transition-colors">
+                                        <Link to={getUserRole(user?.role).label} onClick={() => setOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-slate-300 hover:bg-white/5 rounded-xl transition-colors">
                                             <MdDashboard className="text-cyan-400 text-lg" /> Dashboard
                                         </Link>
                                         <Link to="/settings" onClick={() => setOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-slate-300 hover:bg-white/5 rounded-xl transition-colors">

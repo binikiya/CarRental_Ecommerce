@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaCalendarAlt, FaFilePdf, FaBan, FaSync } from "react-icons/fa";
+import { FaCalendarAlt, FaFilePdf, FaBan, FaSync, FaStar } from "react-icons/fa";
 import { MdIncompleteCircle } from "react-icons/md";
-import { getOrders, requestOrderCancel } from "../../api/carService";
+import { getOrders, requestOrderCancel, downloadInvoice } from "../../api/carService";
 import { useCurrency } from "../../context/CurrencyContext";
+import ReviewModal from "./ReviewModal";
 import toast from "react-hot-toast";
 
 const BookingHistory = () => {
     const [orders, setOrders] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const { symbol, rate } = useCurrency();
+    const [selectedCarForReview, setSelectedCarForReview] = useState<number | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -38,6 +40,23 @@ const BookingHistory = () => {
             fetchHistory();
         } catch (err) {
             toast.error("Unable to cancel at this time.");
+        }
+    };
+
+    const handleDownloadInvoice = async (orderId: number, orderNumber: string) => {
+        try {
+            const response = await downloadInvoice(orderId);
+
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `Invoice_${orderNumber}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        }
+        catch (error) {
+            toast.error("Could not generate invoice.");
         }
     };
 
@@ -84,7 +103,7 @@ const BookingHistory = () => {
                                     {order.payment_status}
                                 </p>
                             </div>
-                            
+
                             <div className="flex gap-2">
                                 {order.payment_status === 'pending' && (
                                     <button title="Complete Payment"
@@ -95,12 +114,28 @@ const BookingHistory = () => {
                                     </button>
                                 )}
 
-                                <button 
-                                    title="Download Invoice" 
-                                    className="p-4 bg-slate-50 dark:bg-white/5 rounded-2xl text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-all"
-                                >
-                                    <FaFilePdf size={18} />
-                                </button>
+                                {(order.payment_status === 'paid' || order.payment_status === 'completed') && (
+                                    <div className="flex gap-2">
+                                        <button 
+                                            onClick={() => handleDownloadInvoice(order.id, order.order_number)}
+                                            title="Download Invoice" 
+                                            className="p-4 bg-slate-50 dark:bg-white/5 rounded-2xl text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-all"
+                                        >
+                                            <FaFilePdf size={18} />
+                                        </button>
+
+                                        <button 
+                                            onClick={() => {
+                                                console.log("Order Item:", order.items[0]);
+                                                setSelectedCarForReview(order.items[0].car_id || order.items[0].car);
+                                            }}
+                                            title="Leave a Review"
+                                            className="p-4 bg-indigo-50 text-yellow-500 text-[10px] font-black rounded-xl hover:bg-indigo-600 transition-all"
+                                        >
+                                            <FaStar size={18} />
+                                        </button>
+                                    </div>
+                                )}
 
                                 {['pending', 'paid'].includes(order.payment_status) && (
                                     <button 
@@ -120,6 +155,16 @@ const BookingHistory = () => {
                     </div>
                 )}
             </div>
+            {selectedCarForReview && (
+                <ReviewModal 
+                    carId={selectedCarForReview} 
+                    onClose={() => setSelectedCarForReview(null)} 
+                    onSuccess={() => {
+                        fetchHistory();
+                        toast.success("Thank you! Your review is pending approval.");
+                    }}
+                />
+            )}
         </div>
     );
 };

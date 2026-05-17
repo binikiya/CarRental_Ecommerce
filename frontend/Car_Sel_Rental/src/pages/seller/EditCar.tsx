@@ -18,10 +18,13 @@ const EditCar = () => {
         fetchCar();
     }, [id]);
 
-    const handleBlockDates = async (dates: string[]) => {
-        // dates = ["2026-02-20", "2026-02-21"]
-        await api.post(`/cars/${id}/block_availability/`, { dates });
-        setToast({ show: true, message: "Dates blocked!" });
+    const handleBlockDate = async (selectedDate: string) => {
+        try {
+            await api.post(`/cars/${id}/block-date/`, { date: selectedDate });
+            setToast({ show: true, message: "Date blocked successfully" });
+        } catch (err) {
+            setToast({ show: true, message: "Could not block date" });
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -54,6 +57,11 @@ const EditCar = () => {
                 <div className="md:col-span-2">
                     <label className="label-style">Tag</label>
                     <input value={formData.tag} name="tag" type="text" onChange={(e) => setFormData({...formData, tag: e.target.value})} className="input-style"/>
+                </div>
+
+                <div className="md:col-span-2">
+                    <label className="label-style">Quantity</label>
+                    <input value={formData.quantity} name="quantity" type="number" onChange={(e) => setFormData({...formData, quantity: parseInt(e.target.value) || 0})} className="input-style"/>
                 </div>
 
                 <button type="submit" className="md:col-span-2 py-4 bg-cyan-500 text-slate-900 font-bold rounded-2xl hover:bg-cyan-400">

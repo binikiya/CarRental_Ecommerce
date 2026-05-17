@@ -1,6 +1,6 @@
 ## CarRental and Buy Ecommerce Website
 --------------------------------------------
-This is multivendor ecommerce website. Customers can purchase web scripts in various technologies.
+This is multivendor ecommerce website. This website helps customers to buy and rent different type of cars/vehicles
 
 # Features
 --------------------------------------------

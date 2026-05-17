@@ -5,8 +5,10 @@ from django.contrib.auth.hashers import check_password
 from rest_framework.response import Response
 from rest_framework import status
 from datetime import date
+from django.db.models import Q
 from django.core.exceptions import ValidationError
 from .models import User, SavedAddress, PaymentMethod, Review, Wishlist
+from orders.models import Order
 from .serializers import UserSerializer, SavedAddressSerializer, PaymentMethodSerializer, ReviewSerializer, WishlistSerializer
 
 
@@ -122,18 +124,25 @@ class ReviewViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated,]
 
     def get_queryset(self):
-        return Review.objects.filter(user=self.request.user).order_by('-created_at')
+        if self.request.user.is_staff:
+            return Review.objects.all()
+        return Review.objects.filter(Q(status='approved') | Q(user=self.request.user))
 
     def perform_update(self, serializer):
         serializer.save(status='pending')
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user, status='pending')
+        car_id = self.request.data.get('car')
+        has_purchased = Order.objects.filter(
+            user=self.request.user, 
+            order_items__car_id=car_id, 
+            payment_status__in=['paid', 'completed']
+        ).exists()
 
-    def get_object(self):
-        obj = Review.objects.get_object_by_public_id(self.kwargs['pk'])
-        self.check_object_permissions(self.request, obj)
-        return obj
+        if not has_purchased:
+            raise ValidationError("You can only review vehicles you have purchased or rented.")
+
+        serializer.save(user=self.request.user)
 
 
 class WishlistViewSet(viewsets.ModelViewSet):

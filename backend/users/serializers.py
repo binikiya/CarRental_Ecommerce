@@ -32,10 +32,12 @@ class PaymentMethodSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    user_email = serializers.EmailField(source='user.email', read_only=True)
 
     class Meta:
         model = Review
-        fields = ['id', 'user', 'car', 'rating', 'comment', 'status', 'created_at']
+        fields = ['id', 'user', 'user_email', 'car', 'rating', 'comment', 'status', 'created_at']
+        read_only_fields = ['user', 'status']
 
 
 class WishlistSerializer(serializers.ModelSerializer):

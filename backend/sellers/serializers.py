@@ -27,5 +27,5 @@ class AuditLogSerializer(serializers.ModelSerializer):
 class DisputeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dispute
-        fields = ['id', 'order', 'seller', 'customer', 'reason', 'status', 'created_at', 'updated_at']
+        fields = ['id', 'order', 'raised_by', 'reason', 'status', 'created_at', 'admin_note']
         read_only_fields = ['status']

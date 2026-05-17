@@ -35,6 +35,7 @@ import ManageAddresses from "./pages/customer/ManageAddresses";
 import ManagePayments from "./pages/customer/ManagePayments";
 import ManageReviews from "./pages/customer/ManageReviews";
 import Checkout from "./pages/customer/Checkout";
+import ReviewModal from "./pages/customer/ReviewModal";
 
 
 function App() {
@@ -82,6 +83,7 @@ function App() {
                 <Route path="/customer/payments" element={<ManagePayments />} />
                 <Route path="/customer/reviews" element={<ManageReviews />} />
                 <Route path="/customer/checkout/:orderId" element={<Checkout />} />
+                <Route path="/customer/review/:carId" element={<ReviewModal />} />
               </Route>
             </Route>
 

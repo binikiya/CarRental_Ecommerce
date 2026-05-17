@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom"; 
 import { getCarDetails, bookCar, contactSeller } from "../api/carService";
-import { FaGasPump, FaCogs, FaTachometerAlt, FaCalendarAlt, FaEnvelope, FaSpinner, FaCheckCircle } from "react-icons/fa";
+import { FaGasPump, FaStar, FaCogs, FaTachometerAlt, FaCalendarAlt, FaEnvelope, FaSpinner, FaCheckCircle } from "react-icons/fa";
 import toast from "react-hot-toast";
 
 const CarDetails = () => {
@@ -12,15 +12,23 @@ const CarDetails = () => {
     const [loading, setLoading] = useState(false);
     const [showInquiry, setShowInquiry] = useState(false);
     const [message, setMessage] = useState("Is this car still available? I'm interested.");
+    const [reviews, setReviews] = useState<any[]>([]);
 
     useEffect(() => {
         if (id) {
             getCarDetails(id).then(data => {
                 setCar(data);
                 setActiveImage(data.displayImage || (data.images?.[0]?.image_url) || "");
+                if (data.reviews) setReviews(data.reviews);
             }).catch(() => toast.error("Could not load car details."));
         }
     }, [id]);
+
+    const renderStars = (rating: number) => {
+        return [...Array(5)].map((_, i) => (
+            <FaStar key={i} className={i < rating ? "text-yellow-400" : "text-slate-300 dark:text-slate-700"} size={14} />
+        ));
+    };
 
     const handleBooking = async () => {
         setLoading(true);
@@ -87,6 +95,42 @@ const CarDetails = () => {
                     <div className="bg-slate-50 dark:bg-white/5 p-8 rounded-[2.5rem] border border-slate-100 dark:border-white/5">
                         <h3 className="text-xl font-black mb-4 dark:text-white uppercase tracking-widest text-xs text-cyan-500">Full Description</h3>
                         <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-lg">{car.description}</p>
+                    </div>
+
+                    <div className="mt-20 border-t border-slate-100 dark:border-white/5 pt-16">
+                        <div className="flex items-center justify-between mb-10">
+                            <div>
+                                <h2 className="text-3xl font-black dark:text-white">User <span className="text-cyan-500">Reviews</span></h2>
+                                <p className="text-slate-500 text-sm mt-2">{reviews.length} verified experiences</p>
+                            </div>
+                            {reviews.length > 0 && (
+                                <div className="bg-cyan-500/10 px-4 py-2 rounded-2xl border border-cyan-500/20">
+                                    <span className="text-cyan-500 font-black text-xl">
+                                        {(reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)}
+                                    </span>
+                                    <span className="text-slate-500 text-xs ml-2">/ 5.0</span>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {reviews.length > 0 ? reviews.map((rev: any) => (
+                                <div key={rev.id} className="p-8 rounded-[2.5rem] bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 relative">
+                                    <div className="flex gap-1 mb-4">
+                                        {renderStars(rev.rating)}
+                                    </div>
+                                    <p className="text-slate-600 dark:text-slate-300 italic mb-6">"{rev.comment}"</p>
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-[10px] font-bold dark:text-white">
+                                            {rev.user_email?.charAt(0).toUpperCase()}
+                                        </div>
+                                        <span className="text-xs font-black dark:text-white">{rev.user_email}</span>
+                                    </div>
+                                </div>
+                            )) : (
+                                <p className="text-slate-500 italic">No reviews yet for this vehicle.</p>
+                            )}
+                        </div>
                     </div>
                 </div>
 

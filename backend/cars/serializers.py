@@ -17,7 +17,7 @@ class BrandSerializer(serializers.ModelSerializer):
 class RentalAvailabilitySerializer(serializers.ModelSerializer):
     class Meta:
         model = RentalAvailability
-        fields = ['id', 'name', 'available_from', 'available_to', 'status', 'created_at']
+        fields = ['id', 'car', 'available_from', 'available_to', 'status', 'created_at']
 
 
 class RentalSerializer(serializers.ModelSerializer):

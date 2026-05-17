@@ -28,6 +28,9 @@ export const createCar = async (carData: any) => {
     return response.data; 
 };
 
+export const updateStock = (carId: number, quantity: number) => 
+    api.patch(`/cars/car/${carId}/`, { quantity });
+
 export const uploadCarImage = async (carId: number, imageUrl: string, isPrimary: boolean) => {
     const response = await api.post('/cars/car-image/', {
         car: carId,
@@ -79,10 +82,15 @@ export const updateUserRole = (id: number, role: string) => api.patch(`/users/${
 
 export const exportCommissionCSV = () => api.get('/seller/commission/export_csv/', { responseType: 'blob' });
 
+
+// Customer APIs
 export const getOrders = () => api.get('/orders/');
 export const requestOrderCancel = (orderId: number) => api.patch(`/orders/${orderId}/request_cancel/`);
 export const updateOrderStatus = (id: number, status: string) => 
     api.patch(`/orders/${id}/change_status/`, { status });
+export const downloadInvoice = (orderId: number) => api.get(`/orders/${orderId}/download_invoice/`, {
+    responseType: 'blob',
+});
 
 export const getSellerProfile = () => api.get('/seller/retrieve/');
 export const updateSellerProfile = (data: any) => api.patch('/seller/update/', data);
@@ -120,3 +128,9 @@ export const deactivateAccount = () => api.post('/users/deactivate/');
 // Inquiry
 export const bookCar = (id: number) => api.post(`/cars/car/${id}/book_car/`);
 export const contactSeller = (id: number, message: string) => api.post(`/cars/car/${id}/contact_seller/`, { message });
+
+// Review
+export const submitReview = async (carId: number, rating: number, comment: string) => {
+    const response = await api.post(`/users/reviews/`, { car: carId, rating, comment });
+    return response.data;
+};

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaEdit, FaTrash, FaPlus, FaCarSide, FaEye } from "react-icons/fa";
-import { getMyCars, deleteCar, updateCarStatus } from "../../api/carService";
+import { getMyCars, deleteCar } from "../../api/carService";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 
@@ -23,6 +23,13 @@ const SellerInventory = () => {
         toast.success("Vehicle removed");
         fetchInventory();
     };
+
+    const getStockStatus = (quantity: number) => {
+        if (quantity === 0) return { label: "Sold Out", color: "bg-red-500", text: "text-white" };
+        if (quantity <= 2) return { label: "Low Stock", color: "bg-orange-500", text: "text-white" };
+        return { label: "In Stock", color: "bg-emerald-500/10", text: "text-emerald-500" };
+    };
+
 
     if (loading) return <div className="p-20 text-center animate-pulse text-emerald-500 font-black">FETCHING FLEET...</div>;
 

@@ -17,9 +17,11 @@ const ManagePayments = () => {
         try {
             const res = await getPayments();
             setPayments(res.data);
-        } catch (err) {
+        } 
+        catch (err) {
             toast.error("Failed to load payment methods");
-        } finally {
+        }
+        finally {
             setLoading(false);
         }
     };

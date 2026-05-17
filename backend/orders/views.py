@@ -5,6 +5,12 @@ from rest_framework.decorators import action
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Sum, Q
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from django.db import transaction
+from django.utils import timezone
+from django.core.exceptions import ValidationError
 from .models import Order, OrderItem, Payment
 from users.models import Wishlist
 from .serializers import OrderSerializer, OrderItemSerializer, PaymentSerializer
@@ -59,6 +65,18 @@ class OrderViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
     def perform_update(self, serializer):
+        instance = serializer.save()
+
+        if instance.payment_status == 'paid':
+            with transaction.atomic():
+                for item in instance.order_items.all():
+                    car = item.car
+
+                    if car.quantity >= instance.quantity:
+                        car.quantity -= instance.quantity
+                        car.save()
+                    else:
+                        raise ValidationError(f"Insufficient stock for {car.title}")
         order = self.get_object()
         if order.payment_status in LOCKED_STATUSES:
             raise PermissionDenied("This order cannot be modified.")
@@ -68,7 +86,29 @@ class OrderViewSet(viewsets.ModelViewSet):
         if instance.payment_status in LOCKED_STATUSES:
             raise PermissionDenied("This order cannot be deleted.")
         instance.delete()
-    
+
+    @action(detail=True, methods=['get'])
+    def download_invoice(self, request, pk=None):
+        order = self.get_object()
+
+        if order.payment_status not in ['paid', 'completed']:
+            return HttpResponse("Invoice only available for paid orders.", status=403)
+
+        try:
+            template = get_template('invoices/invoice_template.html')
+            context = {'order': order}
+            html = template.render(context)
+            
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="Invoice_{order.order_number}.pdf"'
+
+            pisa_status = pisa.CreatePDF(html, dest=response)
+            if pisa_status.err:
+                return HttpResponse('PDF Generation Error', status=500)
+            return response
+        except Exception as e:
+            return HttpResponse(f"Error: {str(e)}", status=500)
+
     @action(detail=True, methods=['patch'])
     def request_cancel(self, request, pk=None):
         order = self.get_object()

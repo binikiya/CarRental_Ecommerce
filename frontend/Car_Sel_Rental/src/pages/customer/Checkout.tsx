@@ -34,7 +34,8 @@ const Checkout = () => {
                 const defaultPay = payRes.data.find((p: any) => p.is_default);
                 if (defaultPay) setSelectedPayment(defaultPay);
 
-            } catch (err) {
+            }
+            catch (err) {
                 toast.error("Failed to load checkout data");
             }
         };
